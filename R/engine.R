@@ -37,13 +37,13 @@ crs_engine_get_wk_trans <- function(engine, handleable, crs_to, crs_from = wk::w
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_transform <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
+crs_engine_transform <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
   UseMethod("crs_engine_transform")
 }
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_transform.default <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
+crs_engine_transform.default <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
   if (inherits(crs_to, "wk_crs_inherit") || wk::wk_crs_equal(crs_to, crs_from)) {
     return(handleable)
   } else if (inherits(crs_from, "wk_crs_inherit")) {
@@ -57,7 +57,7 @@ crs_engine_transform.default <- function(engine, handleable, crs_to, crs_from = 
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_transform.crs2crs_engine_null <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
+crs_engine_transform.crs2crs_engine_null <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
   stop(
     sprintf(
       "crs_engine_null() can't transform from...\n%s\n...to...\n%s",
