@@ -17,3 +17,5 @@ LinkingTo:
     wk
 Imports: 
     wk
+URL: https://github.com/paleolimbot/crs2crs
+BugReports: https://github.com/paleolimbot/crs2crs/issues
