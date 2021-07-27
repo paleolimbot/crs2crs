@@ -9,6 +9,14 @@
 Provides a flexible framework for reproducible
   coordinate transforms.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/paleolimbot/crs2crs}
+  \item Report bugs at \url{https://github.com/paleolimbot/crs2crs/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Dewey Dunnington \email{dewey@fishandwhistle.net} (\href{https://orcid.org/0000-0002-9415-4582}{ORCID})
 
