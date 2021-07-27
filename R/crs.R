@@ -21,3 +21,15 @@ crs_hash_prepare <- function(crs) {
 crs_hash_prepare.default <- function(crs) {
   crs
 }
+
+#' @rdname crs_hash_prepare
+#' @export
+crs_proj_definition <- function(crs, proj_version = NULL) {
+  UseMethod("crs_proj_definition")
+}
+
+#' @rdname crs_hash_prepare
+#' @export
+crs_proj_definition.character <- function(crs, proj_version = NULL) {
+  UseMethod("crs_proj_definition")
+}
