@@ -14,12 +14,7 @@ crs_engine_null()
 
 crs_engine_identity(quiet = FALSE)
 
-crs_engine_get_wk_trans(
-  engine,
-  handleable,
-  crs_to,
-  crs_from = wk::wk_crs(handleable)
-)
+crs_engine_get_wk_trans(engine, handleable, crs_to, crs_from)
 
 crs_engine_transform(
   engine,

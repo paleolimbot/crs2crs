@@ -1,0 +1,99 @@
+
+#' Transform using R functions
+#'
+#' @param engine A [crs_engine_fun()]
+#' @param fun A function that accepts the output of [wk::wk_coords()] and modifies
+#'   the `x`, `y`, `z`, and/or `m` columns. These columns can also be added
+#'   or removed to set or drop the dimensions of the output.
+#' @inheritParams crs_engine_null
+#'
+#' @return
+#'   - `crs_engine_fun()`: An engine that can be used for transforms
+#'   - `crs_engine_fun_define()`: Returns `engine`, modified mutably
+#'   - `crs_engine_fun_get()`: A [function()] that accepts a single argument
+#'     that is the output of [wk::wk_coords()].
+#' @export
+#'
+#' @examples
+#' engine <- crs_engine_fun()
+#' engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coords) {
+#'   r <- 6378137
+#'   coords$x <- coords$x * pi / 180 * r
+#'   coords$y <- log(tan(pi / 4 + coords$y * pi / 180 / 2)) * r
+#'   coords
+#' })
+#'
+#' crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857")
+#'
+crs_engine_fun <- function() {
+  engine <- list(crs = list(), fun = list())
+  structure(engine, class = "crs2crs_engine_fun")
+}
+
+#' @rdname crs_engine_fun
+#' @export
+crs_engine_fun_define <- function(engine, crs_to, crs_from, fun) {
+  if (!is.function(fun)) {
+    stop("`fun` must be a function")
+  }
+
+  crs_to_hash <- rlang::hash(crs_hash_prepare(crs_to))
+  crs_from_hash <- rlang::hash(crs_hash_prepare(crs_from))
+
+  if (!(crs_to_hash %in% engine$fun)) {
+    engine$fun[[crs_to_hash]] <- list()
+  }
+
+  engine$fun[[crs_to_hash]][[crs_from_hash]] <- fun
+
+  if (!(crs_to_hash %in% names(engine$crs))) {
+    engine$crs[[crs_to_hash]] <- crs_to
+  }
+
+  if (!(crs_from_hash %in% names(engine$crs))) {
+    engine$crs[[crs_from_hash]] <- crs_from
+  }
+
+  invisible(engine)
+}
+
+#' @rdname crs_engine_fun
+#' @export
+crs_engine_fun_get <- function(engine, crs_to, crs_from) {
+  crs_to_hash <- rlang::hash(crs_hash_prepare(crs_to))
+  crs_from_hash <- rlang::hash(crs_hash_prepare(crs_from))
+  result <- engine$fun[[crs_to_hash]][[crs_from_hash]]
+
+  if (is.null(result)) {
+    stop(
+      sprintf(
+        "crs_engine_fun(): no transform defined from...\n%s\n...to...\n%s",
+        format(crs_from), format(crs_to)
+      ),
+      call. = FALSE
+    )
+  }
+
+  result
+}
+
+#' @rdname crs_engine_fun
+#' @export
+crs_engine_get_wk_trans.crs2crs_engine_fun <- function(engine, handleable, crs_to, crs_from) {
+  fun <- crs_engine_fun_get(engine, crs_to, crs_from)
+
+  coords_original <- wk::wk_coords(handleable)
+  coords <- fun(coords_original)
+
+  stopifnot(
+    is.data.frame(coords),
+    nrow(coords) == nrow(coords_original),
+    all(c("x", "y") %in% names(coords))
+  )
+
+  crs_trans_explicit(
+    wk::as_xy(coords),
+    use_z = "z" %in% names(coords),
+    use_m = "m" %in% names(coords)
+  )
+}

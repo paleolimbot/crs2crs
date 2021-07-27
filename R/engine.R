@@ -31,7 +31,7 @@ crs_engine_identity <- function(quiet = FALSE) {
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_get_wk_trans <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
+crs_engine_get_wk_trans <- function(engine, handleable, crs_to, crs_from) {
   UseMethod("crs_engine_get_wk_trans")
 }
 

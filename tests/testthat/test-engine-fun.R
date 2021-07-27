@@ -1,0 +1,22 @@
+
+test_that("crs_engine_fun() works", {
+  engine <- crs_engine_fun()
+  engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coords) {
+    r <- 6378137
+    coords$x <- coords$x * pi / 180 * r
+    coords$y <- log(tan(pi / 4 + coords$y * pi / 180 / 2)) * r
+    coords
+  })
+
+  expect_equal(
+    crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857"),
+    wk::xy(-7124447.41076951, 5621521.48619207, crs = "EPSG:3857")
+  )
+
+  expect_error(
+    crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "def not a CRS"),
+    "no transform defined"
+  )
+
+  expect_error(crs_engine_fun_define(engine, "a", "b", NULL), "must be a function")
+})
