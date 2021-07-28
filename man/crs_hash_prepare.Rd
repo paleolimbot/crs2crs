@@ -3,20 +3,33 @@
 \name{crs_hash_prepare}
 \alias{crs_hash_prepare}
 \alias{crs_hash_prepare.default}
+\alias{crs_proj_definition}
+\alias{crs_proj_definition.character}
 \title{CRS object generic methods}
 \usage{
 crs_hash_prepare(crs)
 
 \method{crs_hash_prepare}{default}(crs)
+
+crs_proj_definition(crs, proj_version = NULL)
+
+\method{crs_proj_definition}{character}(crs, proj_version = NULL)
 }
 \arguments{
 \item{crs}{An arbitrary R object}
+
+\item{proj_version}{A \code{\link[=package_version]{package_version()}} of the PROJ version, or
+\code{NULL} if the PROJ version is unknown.}
 }
 \value{
 \itemize{
 \item \code{crs_hash_prepare()} Returns an object that will be passed to
 \code{\link[rlang:hash]{rlang::hash()}} to identify a CRS object. The object returned by
 this method should be canonical.
+\item \code{crs_proj_definition()} Returns a string used to represent the
+CRS in PROJ. For recent PROJ version you'll want to return WKT2; however
+you should check \code{proj_version} if you want this to work with older
+versions of PROJ.
 }
 }
 \description{
@@ -24,5 +37,6 @@ CRS object generic methods
 }
 \examples{
 rlang::hash(crs_hash_prepare(1234))
+crs_proj_definition("EPSG:4326")
 
 }
