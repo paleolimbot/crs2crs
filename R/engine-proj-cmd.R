@@ -13,6 +13,7 @@
 #'   contain `handleable`, or "intersects" for.
 #' @param bbox The optional bounding box of the object.
 #'   Defaults to [wk::wk_bbox()] of `handleable` forced to `crs_from`.
+#'   Use `NULL` to skip bounding box selectio for a single transformation.
 #' @param quiet Use `TRUE` to suppress output.
 #' @inheritParams crs_engine_null
 #'
@@ -40,7 +41,7 @@
 #'
 crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projinfo"),
                                 cct = getOption("crs2crs.cct", "cct"),
-                                spatial_test = "contains",
+                                spatial_test = "intersects",
                                 env = character(), quiet = FALSE) {
   if (!requireNamespace("processx", quietly = TRUE)) {
     stop("crs_engine_proj_cmd() requires package 'processx'", call. = FALSE)
@@ -114,7 +115,7 @@ crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
                                          bbox = wk::wk_bbox(handleable),
                                          extra_args = character()) {
 
-  if (engine$spatial_test != "none") {
+  if (!is.null(bbox) && (engine$spatial_test != "none")) {
     # don't pass extra arguments for transformed bbox
     engine2 <- engine
     engine2$spatial_test <- "none"
