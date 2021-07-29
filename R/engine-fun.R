@@ -32,7 +32,11 @@
 #'   coords
 #' })
 #'
-#' crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857")
+#' crs_transform(
+#'   wk::xy(-64, 45, crs = "OGC:CRS84"),
+#'   "EPSG:3857",
+#'   engine = engine
+#' )
 #'
 #' # can also use a function to apply a generic transform
 #' crs_transform_fun(wk::xy(1, 2), function(coords) {

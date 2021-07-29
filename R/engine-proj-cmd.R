@@ -24,7 +24,10 @@
 #' @examples
 #' if (crs_has_default_proj_cmd()) {
 #'   engine <- crs_engine_proj_cmd()
-#'   crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857")
+#'   crs_transform(
+#'     wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857",
+#'     engine = engine
+#'   )
 #' }
 #'
 crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projinfo"),

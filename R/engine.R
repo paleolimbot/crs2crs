@@ -17,7 +17,10 @@
 #'
 #' @examples
 #' crs_engine_null()
-#' crs_engine_transform(crs_engine_identity(), wk::xy(1, 1), "some_crs")
+#' crs_transform(
+#'   wk::xy(1, 1), "some_crs",
+#'   engine = crs_engine_identity()
+#' )
 #'
 crs_engine_null <- function() {
   structure(list(), class = "crs2crs_engine_null")
