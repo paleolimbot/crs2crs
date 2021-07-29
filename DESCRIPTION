@@ -20,6 +20,7 @@ Imports:
 URL: https://github.com/paleolimbot/crs2crs
 BugReports: https://github.com/paleolimbot/crs2crs/issues
 Suggests: 
+    covr,
     processx,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
