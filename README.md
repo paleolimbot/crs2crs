@@ -83,7 +83,7 @@ nc <- read_sf(system.file("shape/nc.shp", package = "sf")) %>%
   st_transform("OGC:CRS84")
 
 nc %>% 
-  crs_transform("EPSG:3857", crs_from = "OGC:CRS84")
+  crs_transform("EPSG:3857")
 #> Simple feature collection with 100 features and 14 fields
 #> Geometry type: MULTIPOLYGON
 #> Dimension:     XY
@@ -125,7 +125,8 @@ engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coord
 })
 
 crs_set_default_engine(engine)
-crs_transform(nc, "EPSG:3857", "OGC:CRS84")
+nc %>% 
+  crs_transform("EPSG:3857")
 #> Running cct -d 16 '+proj=pipeline' '+step' '+proj=unitconvert' '+xy_in=deg' \
 #>   '+xy_out=rad' '+step' '+proj=webmerc' '+lat_0=0' '+lon_0=0' '+x_0=0' \
 #>   '+y_0=0' '+ellps=WGS84'

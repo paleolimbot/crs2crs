@@ -70,7 +70,7 @@ nc <- read_sf(system.file("shape/nc.shp", package = "sf")) %>%
   st_transform("OGC:CRS84")
 
 nc %>% 
-  crs_transform("EPSG:3857", crs_from = "OGC:CRS84")
+  crs_transform("EPSG:3857")
 ```
 
 You can also combine engines to, for example, force a custom pipeline to be used for a given conversion:
@@ -89,5 +89,6 @@ engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coord
 })
 
 crs_set_default_engine(engine)
-crs_transform(nc, "EPSG:3857", "OGC:CRS84")
+nc %>% 
+  crs_transform("EPSG:3857")
 ```
