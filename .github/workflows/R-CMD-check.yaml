@@ -55,6 +55,14 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
+      - name: Install PROJ (MacOS)
+        if: runner.os == 'MacOS'
+        run: brew install proj
+
+      - name: Install PROJ (Linux):
+        if: runner.os == 'Linux'
+        run: sudo apt-get install proj
+
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
