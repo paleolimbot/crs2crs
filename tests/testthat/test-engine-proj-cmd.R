@@ -8,3 +8,12 @@ test_that("PROJ command-line interface works", {
     wk::xy(-7124447.41076951, 5621521.48619207, crs = "EPSG:3857")
   )
 })
+
+test_that("PROJ command-line cct interface works", {
+  skip_if_not(crs_has_default_proj_cmd())
+  engine <- crs_engine_proj_cmd(quiet = TRUE)
+  expect_equal(
+    crs_cct_proj_cmd(wk::xy(1, 2), "+proj=axisswap +order=2,1", engine = engine),
+    wk::xy(2, 1)
+  )
+})

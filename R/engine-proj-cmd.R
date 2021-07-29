@@ -3,6 +3,7 @@
 #'
 #' @param projinfo Path to the projinfo executable
 #' @param cct Path to the cct executable
+#' @param pipeline A PROJ coordinate transformation pipeline definition
 #' @param env A list of environment variables to be applied during calls
 #'   to projinfo and proj
 #' @param quiet Use `TRUE` to suppress output.
@@ -117,6 +118,14 @@ crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
   strsplit(result$stdout, "\n", fixed = TRUE)[[1]]
 }
 
+#' @rdname crs_engine_proj_cmd
+#' @export
+crs_cct_proj_cmd <- function(handleable, pipeline, engine = crs_default_engine()) {
+  stopifnot(inherits(engine, "crs2crs_engine_proj_cmd"))
+  trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
+  wk::wk_transform(handleable, trans)
+}
+
 crs_engine_proj_cmd_trans <- function(engine, pipeline, coords) {
   # project a million coords at a time in chunks
   chunk_size <- 2 ^ 20
@@ -194,8 +203,12 @@ crs_engine_proj_cmd_trans_chunk <- function(engine, pipeline, coords) {
 #' @export
 crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from) {
   pipeline <- crs_engine_proj_cmd_pipeline(engine, handleable, crs_to, crs_from)
+  crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
+}
+
+crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline) {
   coords_original <- wk::wk_coords(handleable)
-  coords <- crs_engine_proj_cmd_trans(engine, pipeline[1], coords_original)
+  coords <- crs_engine_proj_cmd_trans(engine, pipeline, coords_original)
   crs_trans_explicit(
     wk::as_xy(coords),
     use_z = "z" %in% names(coords),

@@ -4,6 +4,7 @@
 \alias{crs_engine_proj_cmd}
 \alias{crs_has_default_proj_cmd}
 \alias{crs_engine_proj_cmd_pipeline}
+\alias{crs_cct_proj_cmd}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_proj_cmd}
 \title{PROJ command-line transformation engine}
 \usage{
@@ -22,6 +23,8 @@ crs_engine_proj_cmd_pipeline(
   crs_to,
   crs_from = wk::wk_crs(handleable)
 )
+
+crs_cct_proj_cmd(handleable, pipeline, engine = crs_default_engine())
 
 \method{crs_engine_get_wk_trans}{crs2crs_engine_proj_cmd}(engine, handleable, crs_to, crs_from)
 }
@@ -43,6 +46,8 @@ to projinfo and proj}
 \item{crs_to}{Source and destination coordinate reference systems}
 
 \item{crs_from}{Source and destination coordinate reference systems}
+
+\item{pipeline}{A PROJ coordinate transformation pipeline definition}
 }
 \value{
 \itemize{
