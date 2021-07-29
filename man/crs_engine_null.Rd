@@ -14,34 +14,38 @@ crs_engine_null()
 
 crs_engine_identity(quiet = FALSE)
 
-crs_engine_get_wk_trans(engine, handleable, crs_to, crs_from)
+crs_engine_get_wk_trans(engine, handleable, crs_to, crs_from, ...)
 
 crs_engine_transform(
   engine,
   handleable,
   crs_to,
-  crs_from = wk::wk_crs(handleable)
+  crs_from = wk::wk_crs(handleable),
+  ...
 )
 
 \method{crs_engine_transform}{default}(
   engine,
   handleable,
   crs_to,
-  crs_from = wk::wk_crs(handleable)
+  crs_from = wk::wk_crs(handleable),
+  ...
 )
 
 \method{crs_engine_transform}{crs2crs_engine_null}(
   engine,
   handleable,
   crs_to,
-  crs_from = wk::wk_crs(handleable)
+  crs_from = wk::wk_crs(handleable),
+  ...
 )
 
 \method{crs_engine_get_wk_trans}{crs2crs_engine_identity}(
   engine,
   handleable,
   crs_to,
-  crs_from = wk::wk_crs(handleable)
+  crs_from = wk::wk_crs(handleable),
+  ...
 )
 }
 \arguments{
@@ -53,6 +57,8 @@ crs_engine_transform(
 \code{\link[wk:rct]{rct()}}, or \code{\link[sf:sfc]{sf::st_sfc()}}) for which \code{\link[wk:wk_handle]{wk_handle()}} is defined.}
 
 \item{crs_from, crs_to}{Source and destination coordinate reference systems}
+
+\item{...}{engine-specific transformation options}
 }
 \value{
 \itemize{

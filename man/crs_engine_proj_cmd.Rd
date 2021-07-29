@@ -11,6 +11,7 @@
 crs_engine_proj_cmd(
   projinfo = getOption("crs2crs.projinfo", "projinfo"),
   cct = getOption("crs2crs.cct", "cct"),
+  use_bbox = TRUE,
   env = character(),
   quiet = FALSE
 )
@@ -21,17 +22,21 @@ crs_engine_proj_cmd_pipeline(
   engine,
   handleable,
   crs_to,
-  crs_from = wk::wk_crs(handleable)
+  crs_from = wk::wk_crs(handleable),
+  extra_args = character()
 )
 
-crs_cct_proj_cmd(handleable, pipeline, engine = crs_default_engine())
+crs_cct_proj_cmd(handleable, pipeline, engine = crs_default_engine(), ...)
 
-\method{crs_engine_get_wk_trans}{crs2crs_engine_proj_cmd}(engine, handleable, crs_to, crs_from)
+\method{crs_engine_get_wk_trans}{crs2crs_engine_proj_cmd}(engine, handleable, crs_to, crs_from, ...)
 }
 \arguments{
 \item{projinfo}{Path to the projinfo executable}
 
 \item{cct}{Path to the cct executable}
+
+\item{use_bbox}{Use \code{TRUE} to query coordinate operations based on the
+approximate bounding box of \code{handleable}.}
 
 \item{env}{A list of environment variables to be applied during calls
 to projinfo and proj}
@@ -47,7 +52,12 @@ to projinfo and proj}
 
 \item{crs_from}{Source and destination coordinate reference systems}
 
+\item{extra_args}{Extra args to pass to \code{projinfo} (e.g., to use specific
+areas or grid options)}
+
 \item{pipeline}{A PROJ coordinate transformation pipeline definition}
+
+\item{...}{engine-specific transformation options}
 }
 \value{
 \itemize{

@@ -5,6 +5,7 @@
 #' @param engine A transform engine such as [crs_engine_null()]
 #' @param crs_from,crs_to Source and destination coordinate reference systems
 #' @param quiet Use `TRUE` to silence warnings about the dummy identity transform
+#' @param ... engine-specific transformation options
 #'
 #' @return
 #'   - `crs_engine_null()` returns an engine that errors on any attempt to perform
@@ -34,33 +35,33 @@ crs_engine_identity <- function(quiet = FALSE) {
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_get_wk_trans <- function(engine, handleable, crs_to, crs_from) {
+crs_engine_get_wk_trans <- function(engine, handleable, crs_to, crs_from, ...) {
   UseMethod("crs_engine_get_wk_trans")
 }
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_transform <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
+crs_engine_transform <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
   UseMethod("crs_engine_transform")
 }
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_transform.default <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
+crs_engine_transform.default <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
   if (inherits(crs_to, "wk_crs_inherit") || wk::wk_crs_equal(crs_to, crs_from)) {
     return(handleable)
   } else if (inherits(crs_from, "wk_crs_inherit")) {
     return(wk::wk_set_crs(handleable, crs_to))
   }
 
-  trans <- crs_engine_get_wk_trans(engine, handleable, crs_to, crs_from)
+  trans <- crs_engine_get_wk_trans(engine, handleable, crs_to, crs_from, ...)
   result <- wk::wk_transform(handleable, trans = trans)
   wk::wk_set_crs(result, crs_to)
 }
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_transform.crs2crs_engine_null <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
+crs_engine_transform.crs2crs_engine_null <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
   stop(
     sprintf(
       "crs_engine_null() can't transform from...\n%s\n...to...\n%s",
@@ -72,7 +73,7 @@ crs_engine_transform.crs2crs_engine_null <- function(engine, handleable, crs_to,
 
 #' @rdname crs_engine_null
 #' @export
-crs_engine_get_wk_trans.crs2crs_engine_identity <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable)) {
+crs_engine_get_wk_trans.crs2crs_engine_identity <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
   if (!isTRUE(engine$quiet)) {
     message(
       sprintf(

@@ -16,7 +16,7 @@ crs_engine_fun_get(engine, crs_to, crs_from)
 
 crs_transform_fun(handleable, fun)
 
-\method{crs_engine_get_wk_trans}{crs2crs_engine_fun}(engine, handleable, crs_to, crs_from)
+\method{crs_engine_get_wk_trans}{crs2crs_engine_fun}(engine, handleable, crs_to, crs_from, ...)
 }
 \arguments{
 \item{prepare}{A function that converts CRS objects to a canonical string
@@ -39,6 +39,8 @@ or removed to set or drop the dimensions of the output.}
 
 \item{handleable}{A geometry vector (e.g., \code{\link[wk:wkb]{wkb()}}, \code{\link[wk:wkt]{wkt()}}, \code{\link[wk:xy]{xy()}},
 \code{\link[wk:rct]{rct()}}, or \code{\link[sf:sfc]{sf::st_sfc()}}) for which \code{\link[wk:wk_handle]{wk_handle()}} is defined.}
+
+\item{...}{engine-specific transformation options}
 }
 \value{
 \itemize{

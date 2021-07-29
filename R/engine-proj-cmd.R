@@ -6,6 +6,10 @@
 #' @param pipeline A PROJ coordinate transformation pipeline definition
 #' @param env A list of environment variables to be applied during calls
 #'   to projinfo and proj
+#' @param extra_args Extra args to pass to `projinfo` (e.g., to use specific
+#'   areas or grid options)
+#' @param use_bbox Use `TRUE` to query coordinate operations based on the
+#'   approximate bounding box of `handleable`.
 #' @param quiet Use `TRUE` to suppress output.
 #' @inheritParams crs_engine_null
 #'
@@ -31,6 +35,7 @@
 #'
 crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projinfo"),
                                 cct = getOption("crs2crs.cct", "cct"),
+                                use_bbox = TRUE,
                                 env = character(), quiet = FALSE) {
   if (!requireNamespace("processx", quietly = TRUE)) {
     stop("crs_engine_proj_cmd() requires package 'processx'", call. = FALSE)
@@ -40,6 +45,7 @@ crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projin
     list(
       projinfo = projinfo,
       cct = cct,
+      use_bbox = use_bbox,
       env = env,
       quiet = quiet
     ),
@@ -99,30 +105,50 @@ crs_has_default_proj_cmd <- function() {
 #' @rdname crs_engine_proj_cmd
 #' @export
 crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
-                                         crs_from = wk::wk_crs(handleable)) {
+                                         crs_from = wk::wk_crs(handleable),
+                                         extra_args = character()) {
+
+  if (engine$use_bbox) {
+    # don't pass extra arguments for transformed bbox
+    bbox_lonlat <- unclass(crs_approx_bbox(handleable, "OGC:CRS84", crs_from, engine = engine))
+    bbox_args <- c(
+      "--bbox",
+      paste(
+        bbox_lonlat$xmin, bbox_lonlat$ymin,
+        bbox_lonlat$xmax, bbox_lonlat$ymax,
+        sep = ","
+      ),
+      "--spatial-test", "intersects"
+    )
+  } else {
+    bbox_args <- character()
+  }
+
   # projinfo -q -s EPSG:25832 -t EPSG:4093 -o PROJ
   result <- processx::run(
     engine$projinfo[1],
     args = c(
       engine$projinfo[-1],
-      "-q",
+      "-q", "--single-line",
       "-o", "PROJ",
       "-s", crs_proj_definition(crs_from, engine$version),
-      "-t", crs_proj_definition(crs_to, engine$version)
+      "-t", crs_proj_definition(crs_to, engine$version),
+      bbox_args,
+      extra_args
     ),
     env = engine$env,
     echo_cmd = !engine$quiet,
     stderr_callback = if (!engine$quiet) function(x, ...) cat(x, file=stderr())
   )
 
-  strsplit(result$stdout, "\n", fixed = TRUE)[[1]]
+  strsplit(result$stdout, "\r?\n")[[1]]
 }
 
 #' @rdname crs_engine_proj_cmd
 #' @export
-crs_cct_proj_cmd <- function(handleable, pipeline, engine = crs_default_engine()) {
+crs_cct_proj_cmd <- function(handleable, pipeline, engine = crs_default_engine(), ...) {
   stopifnot(inherits(engine, "crs2crs_engine_proj_cmd"))
-  trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
+  trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1], ...)
   wk::wk_transform(handleable, trans)
 }
 
@@ -201,12 +227,12 @@ crs_engine_proj_cmd_trans_chunk <- function(engine, pipeline, coords) {
 
 #' @rdname crs_engine_proj_cmd
 #' @export
-crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from) {
+crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from, ...) {
   pipeline <- crs_engine_proj_cmd_pipeline(engine, handleable, crs_to, crs_from)
   crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
 }
 
-crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline) {
+crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline, ...) {
   coords_original <- wk::wk_coords(handleable)
   coords <- crs_engine_proj_cmd_trans(engine, pipeline, coords_original)
   crs_trans_explicit(

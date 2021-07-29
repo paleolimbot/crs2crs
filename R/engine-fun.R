@@ -106,7 +106,7 @@ crs_transform_fun <- function(handleable, fun) {
 
 #' @rdname crs_engine_fun
 #' @export
-crs_engine_get_wk_trans.crs2crs_engine_fun <- function(engine, handleable, crs_to, crs_from) {
+crs_engine_get_wk_trans.crs2crs_engine_fun <- function(engine, handleable, crs_to, crs_from, ...) {
   fun <- crs_engine_fun_get(engine, crs_to, crs_from)
   crs_transform_fun_trans(handleable, fun)
 }

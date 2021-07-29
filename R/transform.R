@@ -23,7 +23,7 @@
 #' })
 #'
 crs_transform <- function(handleable, crs_to, crs_from = wk::wk_crs(handleable),
-                          engine = crs_default_engine()) {
+                          engine = crs_default_engine(), ...) {
   stopifnot(is_crs_engine(engine, env = parent.frame()))
-  crs_engine_transform(engine, handleable, crs_to, crs_from)
+  crs_engine_transform(engine, handleable, crs_to, crs_from, ...)
 }
