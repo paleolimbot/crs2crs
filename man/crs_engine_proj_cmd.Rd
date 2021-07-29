@@ -11,7 +11,7 @@
 crs_engine_proj_cmd(
   projinfo = getOption("crs2crs.projinfo", "projinfo"),
   cct = getOption("crs2crs.cct", "cct"),
-  spatial_test = "contains",
+  spatial_test = "intersects",
   env = character(),
   quiet = FALSE
 )
@@ -55,7 +55,8 @@ to projinfo and proj}
 \item{crs_from}{Source and destination coordinate reference systems}
 
 \item{bbox}{The optional bounding box of the object.
-Defaults to \code{\link[wk:wk_bbox]{wk::wk_bbox()}} of \code{handleable} forced to \code{crs_from}.}
+Defaults to \code{\link[wk:wk_bbox]{wk::wk_bbox()}} of \code{handleable} forced to \code{crs_from}.
+Use \code{NULL} to skip bounding box selectio for a single transformation.}
 
 \item{extra_args}{Extra args to pass to \code{projinfo} (e.g., to use specific
 areas or grid options)}

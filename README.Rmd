@@ -1,0 +1,72 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# crs2crs
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
+The goal of crs2crs is to provide a flexible framework for reproducible coordinate transforms. With the last few releases of PROJ it can be difficult to predict which transform will be applied when converting between spatial reference systems. The crs2crs package provides tools to make these more explicit or to define explicit transforms between reference systems for future reproducibility. It is capable of using PROJ in several forms but doesn't require it.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("paleolimbot/crs2crs")
+```
+
+If you can load the package, you're good to go!
+
+```{r}
+library(crs2crs)
+```
+
+## Example
+
+Use the PROJ command-line engine to transform some coordinates:
+
+```{r example}
+crs_set_default_engine(crs_engine_proj_cmd())
+pos <- wk::xy(-64, 45, crs = "OGC:CRS84")
+crs_transform(pos, "EPSG:3857")
+```
+
+You can also define an engine that uses R functions if you only need a few transforms:
+
+```{r}
+engine <- crs_engine_fun()
+engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coords) {
+  r <- 6378137
+  coords$x <- coords$x * pi / 180 * r
+  coords$y <- log(tan(pi / 4 + coords$y * pi / 180 / 2)) * r
+  coords
+})
+crs_set_default_engine(engine)
+crs_transform(pos, "EPSG:3857")
+```
+
+The `crs_transform()` function is built on `wk::wk_transform()`, so you can pass it any object that defines a `wk::wk_handle()` method (like sf objects!).
+
+```{r}
+library(sf)
+nc <- read_sf(system.file("shape/nc.shp", package = "sf")) %>%
+  st_transform("OGC:CRS84")
+
+nc %>% 
+  crs_transform("EPSG:3857", crs_from = "OGC:CRS84")
+```
