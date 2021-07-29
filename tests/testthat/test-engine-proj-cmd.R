@@ -1,5 +1,5 @@
 
-test_that("multiplication works", {
+test_that("PROJ command-line interface works", {
   skip_if_not(crs_has_default_proj_cmd())
   engine <- crs_engine_proj_cmd(quiet = TRUE)
   expect_true(is_crs_engine(engine))

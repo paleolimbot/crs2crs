@@ -6,8 +6,6 @@
 #' @param env A list of environment variables to be applied during calls
 #'   to projinfo and proj
 #' @param quiet Use `TRUE` to suppress output.
-#' @param pipeline A PROJ pipeline definition
-#' @param coords The output of [wk::wk_coords()]
 #' @inheritParams crs_engine_null
 #'
 #' @return
@@ -119,9 +117,24 @@ crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
   strsplit(result$stdout, "\n", fixed = TRUE)[[1]]
 }
 
-#' @rdname crs_engine_proj_cmd
-#' @export
 crs_engine_proj_cmd_trans <- function(engine, pipeline, coords) {
+  # project a million coords at a time in chunks
+  chunk_size <- 2 ^ 20
+  n <- nrow(coords)
+  n_chunks <- ((n - 1) %/% chunk_size) + 1
+
+  for (i in seq_len(n_chunks)) {
+    coord_i_start <- (i - 1) * chunk_size + 1
+    coord_i_end <- min(coord_i_start + chunk_size - 1, n)
+    coord_i <- coord_i_start:coord_i_end
+    coords[coord_i, ] <-
+      crs_engine_proj_cmd_trans_chunk(engine, pipeline, coords[coord_i, , drop = FALSE])
+  }
+
+  coords
+}
+
+crs_engine_proj_cmd_trans_chunk <- function(engine, pipeline, coords) {
   # the IO here is highly inefficient but it's really hard to work
   # around the constraints of the PROJ cct tool
   tmp_in <- tempfile()
@@ -174,7 +187,6 @@ crs_engine_proj_cmd_trans <- function(engine, pipeline, coords) {
     coords_out[is.na(coords[[dim]]), dim] <- NA_real_
   }
   coords[dims] <- coords_out[dims]
-
   coords
 }
 
