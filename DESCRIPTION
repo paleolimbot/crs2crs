@@ -16,7 +16,6 @@ RoxygenNote: 7.1.1
 LinkingTo:
     wk
 Imports: 
-    rlang,
     wk
 URL: https://github.com/paleolimbot/crs2crs
 BugReports: https://github.com/paleolimbot/crs2crs/issues

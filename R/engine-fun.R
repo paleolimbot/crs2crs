@@ -1,7 +1,14 @@
 
-#' Transform using R functions
+#' Transform coordinates using R functions
 #'
 #' @param engine A [crs_engine_fun()]
+#' @param prepare A function that converts CRS objects to a canonical string
+#'   definition. This reduces the number of function definitions that might
+#'   otherwise be required to capture the transforms. The default is to
+#'   use [crs_proj_definition()], which returns the shortest possible
+#'   definition of a CRS that can be used as a PROJ definition
+#'   (usually something like "EPSG:32620"), falling back to a more verbose
+#'   definition if an authority string is not found.
 #' @param fun A function that accepts the output of [wk::wk_coords()] and modifies
 #'   the `x`, `y`, `z`, and/or `m` columns. These columns can also be added
 #'   or removed to set or drop the dimensions of the output.
@@ -34,8 +41,8 @@
 #'   coords
 #' })
 #'
-crs_engine_fun <- function() {
-  engine <- list(crs = list(), fun = list())
+crs_engine_fun <- function(prepare = crs_proj_definition) {
+  engine <- list(fun = list(), prepare = match.fun(prepare))
   structure(engine, class = "crs2crs_engine_fun")
 }
 
@@ -46,8 +53,8 @@ crs_engine_fun_define <- function(engine, crs_to, crs_from, fun) {
     stop("`fun` must be a function")
   }
 
-  crs_to_hash <- rlang::hash(crs_hash_prepare(crs_to))
-  crs_from_hash <- rlang::hash(crs_hash_prepare(crs_from))
+  crs_to_hash <- engine$prepare(crs_to)
+  crs_from_hash <- engine$prepare(crs_from)
 
   if (!(crs_to_hash %in% engine$fun)) {
     engine$fun[[crs_to_hash]] <- list()
@@ -69,8 +76,8 @@ crs_engine_fun_define <- function(engine, crs_to, crs_from, fun) {
 #' @rdname crs_engine_fun
 #' @export
 crs_engine_fun_get <- function(engine, crs_to, crs_from) {
-  crs_to_hash <- rlang::hash(crs_hash_prepare(crs_to))
-  crs_from_hash <- rlang::hash(crs_hash_prepare(crs_from))
+  crs_to_hash <- engine$prepare(crs_to)
+  crs_from_hash <- engine$prepare(crs_from)
   result <- engine$fun[[crs_to_hash]][[crs_from_hash]]
 
   if (is.null(result)) {

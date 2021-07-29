@@ -6,9 +6,9 @@
 \alias{crs_engine_fun_get}
 \alias{crs_transform_fun}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_fun}
-\title{Transform using R functions}
+\title{Transform coordinates using R functions}
 \usage{
-crs_engine_fun()
+crs_engine_fun(prepare = crs_proj_definition)
 
 crs_engine_fun_define(engine, crs_to, crs_from, fun)
 
@@ -19,6 +19,14 @@ crs_transform_fun(handleable, fun)
 \method{crs_engine_get_wk_trans}{crs2crs_engine_fun}(engine, handleable, crs_to, crs_from)
 }
 \arguments{
+\item{prepare}{A function that converts CRS objects to a canonical string
+definition. This reduces the number of function definitions that might
+otherwise be required to capture the transforms. The default is to
+use \code{\link[=crs_proj_definition]{crs_proj_definition()}}, which returns the shortest possible
+definition of a CRS that can be used as a PROJ definition
+(usually something like "EPSG:32620"), falling back to a more verbose
+definition if an authority string is not found.}
+
 \item{engine}{A \code{\link[=crs_engine_fun]{crs_engine_fun()}}}
 
 \item{crs_to}{Source and destination coordinate reference systems}
@@ -43,7 +51,7 @@ to the coordinates
 }
 }
 \description{
-Transform using R functions
+Transform coordinates using R functions
 }
 \examples{
 engine <- crs_engine_fun()

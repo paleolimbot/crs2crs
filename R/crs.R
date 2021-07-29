@@ -16,27 +16,29 @@
 #' @export
 #'
 #' @examples
-#' rlang::hash(crs_hash_prepare(1234))
 #' crs_proj_definition("EPSG:4326")
 #'
-crs_hash_prepare <- function(crs) {
-  UseMethod("crs_hash_prepare")
-}
-
-#' @rdname crs_hash_prepare
-#' @export
-crs_hash_prepare.default <- function(crs) {
-  crs
-}
-
-#' @rdname crs_hash_prepare
-#' @export
 crs_proj_definition <- function(crs, proj_version = NULL) {
   UseMethod("crs_proj_definition")
 }
 
-#' @rdname crs_hash_prepare
+#' @rdname crs_proj_definition
 #' @export
 crs_proj_definition.character <- function(crs, proj_version = NULL) {
+  stopifnot(length(crs) == 1)
   crs
+}
+
+#' @rdname crs_proj_definition
+#' @export
+crs_proj_definition.double <- function(crs, proj_version = NULL) {
+  stopifnot(length(crs) == 1)
+  paste0("EPSG:", crs)
+}
+
+#' @rdname crs_proj_definition
+#' @export
+crs_proj_definition.integer <- function(crs, proj_version = NULL) {
+  stopifnot(length(crs) == 1)
+  paste0("EPSG:", crs)
 }
