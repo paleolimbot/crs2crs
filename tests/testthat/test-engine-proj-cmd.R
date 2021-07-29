@@ -9,6 +9,10 @@ test_that("PROJ command-line interface works", {
   )
 })
 
+test_that("The spatial_test argument works for the command-line interface", {
+
+})
+
 test_that("PROJ command-line cct interface works", {
   skip_if_not(crs_has_default_proj_cmd())
   engine <- crs_engine_proj_cmd(quiet = TRUE)

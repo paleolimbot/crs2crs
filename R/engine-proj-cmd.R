@@ -8,8 +8,11 @@
 #'   to projinfo and proj
 #' @param extra_args Extra args to pass to `projinfo` (e.g., to use specific
 #'   areas or grid options)
-#' @param use_bbox Use `TRUE` to query coordinate operations based on the
-#'   approximate bounding box of `handleable`.
+#' @param spatial_test Use "none" to skip querying coordinate operations based
+#'   on `bbox`. Use "contains" to include only operations that completely
+#'   contain `handleable`, or "intersects" for.
+#' @param bbox The optional bounding box of the object.
+#'   Defaults to [wk::wk_bbox()] of `handleable` forced to `crs_from`.
 #' @param quiet Use `TRUE` to suppress output.
 #' @inheritParams crs_engine_null
 #'
@@ -22,6 +25,8 @@
 #'     that will be used to apply the transform.
 #'   - `crs_engine_proj_cmd_trans()`: Returns a modified version of `coords`
 #'     after running cct
+#'   - `crs_cct_proj_cmd()`: Just run the `cct` tool (e.g., to execute a
+#'     predefined pipeline).
 #' @export
 #'
 #' @examples
@@ -35,7 +40,7 @@
 #'
 crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projinfo"),
                                 cct = getOption("crs2crs.cct", "cct"),
-                                use_bbox = TRUE,
+                                spatial_test = "contains",
                                 env = character(), quiet = FALSE) {
   if (!requireNamespace("processx", quietly = TRUE)) {
     stop("crs_engine_proj_cmd() requires package 'processx'", call. = FALSE)
@@ -45,7 +50,7 @@ crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projin
     list(
       projinfo = projinfo,
       cct = cct,
-      use_bbox = use_bbox,
+      spatial_test = spatial_test,
       env = env,
       quiet = quiet
     ),
@@ -106,11 +111,14 @@ crs_has_default_proj_cmd <- function() {
 #' @export
 crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
                                          crs_from = wk::wk_crs(handleable),
+                                         bbox = wk::wk_bbox(handleable),
                                          extra_args = character()) {
 
-  if (engine$use_bbox) {
+  if (engine$spatial_test != "none") {
     # don't pass extra arguments for transformed bbox
-    bbox_lonlat <- unclass(crs_approx_bbox(handleable, "OGC:CRS84", crs_from, engine = engine))
+    engine2 <- engine
+    engine2$spatial_test <- "none"
+    bbox_lonlat <- unclass(crs_approx_bbox(handleable, "OGC:CRS84", crs_from, engine = engine2))
     bbox_args <- c(
       "--bbox",
       paste(
@@ -118,7 +126,7 @@ crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
         bbox_lonlat$xmax, bbox_lonlat$ymax,
         sep = ","
       ),
-      "--spatial-test", "intersects"
+      "--spatial-test", engine$spatial_test
     )
   } else {
     bbox_args <- character()
@@ -148,7 +156,7 @@ crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
 #' @export
 crs_cct_proj_cmd <- function(handleable, pipeline, engine = crs_default_engine(), ...) {
   stopifnot(inherits(engine, "crs2crs_engine_proj_cmd"))
-  trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1], ...)
+  trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
   wk::wk_transform(handleable, trans)
 }
 
@@ -232,7 +240,7 @@ crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, 
   crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
 }
 
-crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline, ...) {
+crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline) {
   coords_original <- wk::wk_coords(handleable)
   coords <- crs_engine_proj_cmd_trans(engine, pipeline, coords_original)
   crs_trans_explicit(

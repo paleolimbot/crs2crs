@@ -11,7 +11,7 @@
 crs_engine_proj_cmd(
   projinfo = getOption("crs2crs.projinfo", "projinfo"),
   cct = getOption("crs2crs.cct", "cct"),
-  use_bbox = TRUE,
+  spatial_test = "contains",
   env = character(),
   quiet = FALSE
 )
@@ -23,6 +23,7 @@ crs_engine_proj_cmd_pipeline(
   handleable,
   crs_to,
   crs_from = wk::wk_crs(handleable),
+  bbox = wk::wk_bbox(handleable),
   extra_args = character()
 )
 
@@ -35,8 +36,9 @@ crs_cct_proj_cmd(handleable, pipeline, engine = crs_default_engine(), ...)
 
 \item{cct}{Path to the cct executable}
 
-\item{use_bbox}{Use \code{TRUE} to query coordinate operations based on the
-approximate bounding box of \code{handleable}.}
+\item{spatial_test}{Use "none" to skip querying coordinate operations based
+on \code{bbox}. Use "contains" to include only operations that completely
+contain \code{handleable}, or "intersects" for.}
 
 \item{env}{A list of environment variables to be applied during calls
 to projinfo and proj}
@@ -51,6 +53,9 @@ to projinfo and proj}
 \item{crs_to}{Source and destination coordinate reference systems}
 
 \item{crs_from}{Source and destination coordinate reference systems}
+
+\item{bbox}{The optional bounding box of the object.
+Defaults to \code{\link[wk:wk_bbox]{wk::wk_bbox()}} of \code{handleable} forced to \code{crs_from}.}
 
 \item{extra_args}{Extra args to pass to \code{projinfo} (e.g., to use specific
 areas or grid options)}
@@ -69,6 +74,8 @@ for this engine can transform coordinates
 that will be used to apply the transform.
 \item \code{crs_engine_proj_cmd_trans()}: Returns a modified version of \code{coords}
 after running cct
+\item \code{crs_cct_proj_cmd()}: Just run the \code{cct} tool (e.g., to execute a
+predefined pipeline).
 }
 }
 \description{
