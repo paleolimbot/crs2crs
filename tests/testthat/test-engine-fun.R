@@ -1,6 +1,7 @@
 
 test_that("crs_engine_fun() works", {
   engine <- crs_engine_fun()
+  expect_true(is_crs_engine(engine))
   engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coords) {
     r <- 6378137
     coords$x <- coords$x * pi / 180 * r
@@ -19,4 +20,15 @@ test_that("crs_engine_fun() works", {
   )
 
   expect_error(crs_engine_fun_define(engine, "a", "b", NULL), "must be a function")
+})
+
+test_that("crs_transform_fun() works", {
+  expect_identical(
+    crs_transform_fun(wk::xy(1, 2), function(coords) {
+      coords$x <- 6
+      coords$y <- 12
+      coords
+    }),
+    wk::xy(6, 12)
+  )
 })

@@ -4,6 +4,7 @@
 \alias{crs_engine_fun}
 \alias{crs_engine_fun_define}
 \alias{crs_engine_fun_get}
+\alias{crs_transform_fun}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_fun}
 \title{Transform using R functions}
 \usage{
@@ -12,6 +13,8 @@ crs_engine_fun()
 crs_engine_fun_define(engine, crs_to, crs_from, fun)
 
 crs_engine_fun_get(engine, crs_to, crs_from)
+
+crs_transform_fun(handleable, fun)
 
 \method{crs_engine_get_wk_trans}{crs2crs_engine_fun}(engine, handleable, crs_to, crs_from)
 }
@@ -35,6 +38,8 @@ or removed to set or drop the dimensions of the output.}
 \item \code{crs_engine_fun_define()}: Returns \code{engine}, modified mutably
 \item \code{crs_engine_fun_get()}: A \code{\link[=function]{function()}} that accepts a single argument
 that is the output of \code{\link[wk:wk_vertices]{wk::wk_coords()}}.
+\item \code{crs_transform_fun()}: Returns a modified \code{handleable} with \code{fun} applied
+to the coordinates
 }
 }
 \description{
@@ -50,5 +55,12 @@ engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coord
 })
 
 crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857")
+
+# can also use a function to apply a generic transform
+crs_transform_fun(wk::xy(1, 2), function(coords) {
+  coords$x <- coords$x * 2
+  coords$y <- coords$y * 2
+  coords
+})
 
 }

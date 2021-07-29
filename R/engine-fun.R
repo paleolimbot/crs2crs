@@ -12,6 +12,8 @@
 #'   - `crs_engine_fun_define()`: Returns `engine`, modified mutably
 #'   - `crs_engine_fun_get()`: A [function()] that accepts a single argument
 #'     that is the output of [wk::wk_coords()].
+#'   - `crs_transform_fun()`: Returns a modified `handleable` with `fun` applied
+#'     to the coordinates
 #' @export
 #'
 #' @examples
@@ -24,6 +26,13 @@
 #' })
 #'
 #' crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857")
+#'
+#' # can also use a function to apply a generic transform
+#' crs_transform_fun(wk::xy(1, 2), function(coords) {
+#'   coords$x <- coords$x * 2
+#'   coords$y <- coords$y * 2
+#'   coords
+#' })
 #'
 crs_engine_fun <- function() {
   engine <- list(crs = list(), fun = list())
@@ -79,9 +88,19 @@ crs_engine_fun_get <- function(engine, crs_to, crs_from) {
 
 #' @rdname crs_engine_fun
 #' @export
+crs_transform_fun <- function(handleable, fun) {
+  trans <- crs_transform_fun_trans(handleable, fun)
+  wk::wk_transform(handleable, trans)
+}
+
+#' @rdname crs_engine_fun
+#' @export
 crs_engine_get_wk_trans.crs2crs_engine_fun <- function(engine, handleable, crs_to, crs_from) {
   fun <- crs_engine_fun_get(engine, crs_to, crs_from)
+  crs_transform_fun_trans(handleable, fun)
+}
 
+crs_transform_fun_trans <- function(handleable, fun) {
   coords_original <- wk::wk_coords(handleable)
   coords <- fun(coords_original)
 
