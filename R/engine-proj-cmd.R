@@ -163,11 +163,11 @@ crs_engine_proj_cmd_trans_chunk <- function(engine, pipeline, coords) {
     args = c(
       engine$cct[-1],
       "-d", "16",
-      paste0("+", pipeline_split),
-      tmp_in
+      paste0("+", pipeline_split)
     ),
     env = engine$env,
     echo_cmd = !engine$quiet,
+    stdin = tmp_in,
     stdout = tmp_out,
     stderr_callback = if (!engine$quiet) function(x, ...) cat(x, file=stderr())
   )
