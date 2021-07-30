@@ -59,7 +59,7 @@ jobs:
         if: runner.os == 'MacOS'
         run: brew install proj
 
-      - name: Install PROJ (Linux):
+      - name: Install PROJ (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get install proj
 
