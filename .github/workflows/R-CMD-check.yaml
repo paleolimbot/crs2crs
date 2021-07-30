@@ -61,7 +61,7 @@ jobs:
 
       - name: Install PROJ (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get install proj
+        run: sudo apt-get install proj-bin
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
