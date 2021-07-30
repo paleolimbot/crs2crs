@@ -42,7 +42,7 @@
 crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projinfo"),
                                 cct = getOption("crs2crs.cct", "cct"),
                                 spatial_test = "intersects",
-                                env = character(), quiet = FALSE) {
+                                env = "current", quiet = FALSE) {
   if (!requireNamespace("processx", quietly = TRUE)) {
     stop("crs_engine_proj_cmd() requires package 'processx'", call. = FALSE)
   }
@@ -62,6 +62,7 @@ crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projin
   result <- processx::run(
     engine$cct[1],
     args = c(engine$cct[-1], "--version"),
+    env = engine$env,
     echo_cmd = !engine$quiet,
     stderr_callback = if (!engine$quiet) function(x, ...) cat(x, file=stderr())
   )
@@ -86,6 +87,7 @@ crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projin
       engine$projinfo[-1],
       "-q", "-s", "EPSG:4326", "-t", "OGC:CRS84", "-o", "PROJ"
     ),
+    env = engine$env,
     echo_cmd = !engine$quiet,
     stderr_callback = if (!engine$quiet) function(x, ...) cat(x, file=stderr())
   )

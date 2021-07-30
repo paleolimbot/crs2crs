@@ -12,7 +12,7 @@ crs_engine_proj_cmd(
   projinfo = getOption("crs2crs.projinfo", "projinfo"),
   cct = getOption("crs2crs.cct", "cct"),
   spatial_test = "intersects",
-  env = character(),
+  env = "current",
   quiet = FALSE
 )
 
