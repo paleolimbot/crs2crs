@@ -2,6 +2,8 @@
 % Please edit documentation in R/transform.R
 \name{crs_transform}
 \alias{crs_transform}
+\alias{crs_set}
+\alias{crs_get}
 \title{Transform Coordinate Reference Systems}
 \usage{
 crs_transform(
@@ -11,6 +13,10 @@ crs_transform(
   engine = crs_default_engine(),
   ...
 )
+
+crs_set(handleable, crs_to)
+
+crs_get(handleable)
 }
 \arguments{
 \item{handleable}{A geometry vector (e.g., \code{\link[wk:wkb]{wkb()}}, \code{\link[wk:wkt]{wkt()}}, \code{\link[wk:xy]{xy()}},

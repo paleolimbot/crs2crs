@@ -27,3 +27,15 @@ crs_transform <- function(handleable, crs_to, crs_from = wk::wk_crs(handleable),
   stopifnot(is_crs_engine(engine, env = parent.frame()))
   crs_engine_transform(engine, handleable, crs_to, crs_from, ...)
 }
+
+#' @rdname crs_transform
+#' @export
+crs_set <- function(handleable, crs_to) {
+  wk::wk_set_crs(handleable, crs_to)
+}
+
+#' @rdname crs_transform
+#' @export
+crs_get <- function(handleable) {
+  wk::wk_crs(handleable)
+}
