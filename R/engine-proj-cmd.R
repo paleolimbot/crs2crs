@@ -22,7 +22,7 @@
 #'     PROJ utilities to transform coordinates
 #'   - `crs_has_default_proj_cmd()`: `TRUE` if the default arguments
 #'     for this engine can transform coordinates
-#'   - `crs_engine_proj_cmd_pipeline()`: Returns the pipeline definition
+#'   - `crs_engine_proj_pipeline()`: Returns the pipeline definition
 #'     that will be used to apply the transform.
 #'   - `crs_engine_proj_cmd_trans()`: Returns a modified version of `coords`
 #'     after running cct
@@ -112,10 +112,10 @@ crs_has_default_proj_cmd <- function() {
 
 #' @rdname crs_engine_proj_cmd
 #' @export
-crs_engine_proj_cmd_pipeline <- function(engine, handleable, crs_to,
-                                         crs_from = wk::wk_crs(handleable),
-                                         bbox = wk::wk_bbox(handleable),
-                                         extra_args = character()) {
+crs_engine_proj_pipeline.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to,
+                                                             crs_from = wk::wk_crs(handleable),
+                                                             bbox = wk::wk_bbox(handleable),
+                                                             extra_args = character()) {
 
   if (!is.null(bbox) && (engine$spatial_test != "none")) {
     # don't pass extra arguments for transformed bbox
@@ -239,7 +239,7 @@ crs_engine_proj_cmd_trans_chunk <- function(engine, pipeline, coords) {
 #' @rdname crs_engine_proj_cmd
 #' @export
 crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from, ...) {
-  pipeline <- crs_engine_proj_cmd_pipeline(engine, handleable, crs_to, crs_from)
+  pipeline <- crs_engine_proj_pipeline(engine, handleable, crs_to, crs_from)
   crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
 }
 

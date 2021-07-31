@@ -3,6 +3,7 @@
 #'
 #' @inheritParams wk::wk_transform
 #' @param engine A transform engine such as [crs_engine_null()]
+#' @param pipeline A character vector representing a PROJ coordinate operation
 #' @param crs_from,crs_to Source and destination coordinate reference systems
 #' @param quiet Use `TRUE` to silence warnings about the dummy identity transform
 #' @param ... engine-specific transformation options
@@ -14,6 +15,10 @@
 #'     transform `handleable`.
 #'   - `crs_engine_transform()` returns a modified version of `handleable` with the
 #'     transform applied.
+#'   - `crs_engine_proj_pipeline()` returns a string representing the pipeline
+#'     transformation that can be passed to `crs_engine_proj_pipeline_apply()`
+#'   - `crs_engine_proj_pipeline_apply()` Returns a transformed version of
+#'     `handleable` with a `NULL` CRS.
 #' @export
 #'
 #' @examples
@@ -43,6 +48,18 @@ crs_engine_get_wk_trans <- function(engine, handleable, crs_to, crs_from, ...) {
 #' @export
 crs_engine_transform <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
   UseMethod("crs_engine_transform")
+}
+
+#' @rdname crs_engine_null
+#' @export
+crs_engine_proj_pipeline <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
+  UseMethod("crs_engine_proj_pipeline")
+}
+
+#' @rdname crs_engine_null
+#' @export
+crs_engine_proj_pipeline_apply <- function(engine, handleable, pipeline, ...) {
+  UseMethod("crs_engine_proj_pipeline_apply")
 }
 
 #' @rdname crs_engine_null

@@ -13,14 +13,14 @@ test_that("The spatial_test argument works for the command-line interface", {
   skip_if_not(crs_has_default_proj_cmd())
   engine <- crs_engine_proj_cmd(quiet = TRUE)
 
-  pipe <- crs_engine_proj_cmd_pipeline(
+  pipe <- crs_engine_proj_pipeline(
     engine,
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83"
   )
   expect_match(pipe, "hgridshift")
 
-  pipe <- crs_engine_proj_cmd_pipeline(
+  pipe <- crs_engine_proj_pipeline(
     engine,
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83",
@@ -29,14 +29,14 @@ test_that("The spatial_test argument works for the command-line interface", {
   expect_equal(pipe, "+proj=noop")
 
   engine$spatial_test <- "none"
-  pipe <- crs_engine_proj_cmd_pipeline(
+  pipe <- crs_engine_proj_pipeline(
     engine,
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83"
   )
   expect_equal(pipe, "+proj=noop")
 
-  pipe <- crs_engine_proj_cmd_pipeline(
+  pipe <- crs_engine_proj_pipeline(
     engine,
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83",

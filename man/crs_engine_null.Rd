@@ -5,6 +5,8 @@
 \alias{crs_engine_identity}
 \alias{crs_engine_get_wk_trans}
 \alias{crs_engine_transform}
+\alias{crs_engine_proj_pipeline}
+\alias{crs_engine_proj_pipeline_apply}
 \alias{crs_engine_transform.default}
 \alias{crs_engine_transform.crs2crs_engine_null}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_identity}
@@ -23,6 +25,16 @@ crs_engine_transform(
   crs_from = wk::wk_crs(handleable),
   ...
 )
+
+crs_engine_proj_pipeline(
+  engine,
+  handleable,
+  crs_to,
+  crs_from = wk::wk_crs(handleable),
+  ...
+)
+
+crs_engine_proj_pipeline_apply(engine, handleable, pipeline, ...)
 
 \method{crs_engine_transform}{default}(
   engine,
@@ -59,6 +71,8 @@ crs_engine_transform(
 \item{crs_from, crs_to}{Source and destination coordinate reference systems}
 
 \item{...}{engine-specific transformation options}
+
+\item{pipeline}{A character vector representing a PROJ coordinate operation}
 }
 \value{
 \itemize{
@@ -68,6 +82,10 @@ a coordinate transform.
 transform \code{handleable}.
 \item \code{crs_engine_transform()} returns a modified version of \code{handleable} with the
 transform applied.
+\item \code{crs_engine_proj_pipeline()} returns a string representing the pipeline
+transformation that can be passed to \code{crs_engine_proj_pipeline_apply()}
+\item \code{crs_engine_proj_pipeline_apply()} Returns a transformed version of
+\code{handleable} with a \code{NULL} CRS.
 }
 }
 \description{

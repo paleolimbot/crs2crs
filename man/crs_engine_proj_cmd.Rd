@@ -3,7 +3,7 @@
 \name{crs_engine_proj_cmd}
 \alias{crs_engine_proj_cmd}
 \alias{crs_has_default_proj_cmd}
-\alias{crs_engine_proj_cmd_pipeline}
+\alias{crs_engine_proj_pipeline.crs2crs_engine_proj_cmd}
 \alias{crs_cct_proj_cmd}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_proj_cmd}
 \title{PROJ command-line transformation engine}
@@ -18,7 +18,7 @@ crs_engine_proj_cmd(
 
 crs_has_default_proj_cmd()
 
-crs_engine_proj_cmd_pipeline(
+\method{crs_engine_proj_pipeline}{crs2crs_engine_proj_cmd}(
   engine,
   handleable,
   crs_to,
@@ -71,7 +71,7 @@ areas or grid options)}
 PROJ utilities to transform coordinates
 \item \code{crs_has_default_proj_cmd()}: \code{TRUE} if the default arguments
 for this engine can transform coordinates
-\item \code{crs_engine_proj_cmd_pipeline()}: Returns the pipeline definition
+\item \code{crs_engine_proj_pipeline()}: Returns the pipeline definition
 that will be used to apply the transform.
 \item \code{crs_engine_proj_cmd_trans()}: Returns a modified version of \code{coords}
 after running cct
