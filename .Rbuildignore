@@ -4,3 +4,6 @@
 ^README\.Rmd$
 ^codecov\.yml$
 ^\.github$
+^crs2crs\.Rcheck$
+^crs2crs.*\.tar\.gz$
+^crs2crs.*\.tgz$

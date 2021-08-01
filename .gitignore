@@ -1,2 +1,5 @@
 .Rproj.user
 .Rhistory
+crs2crs.Rcheck/
+crs2crs*.tar.gz
+crs2crs*.tgz

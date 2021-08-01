@@ -115,7 +115,7 @@ crs_has_default_proj_cmd <- function() {
 crs_engine_proj_pipeline.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to,
                                                              crs_from = wk::wk_crs(handleable),
                                                              bbox = wk::wk_bbox(handleable),
-                                                             extra_args = character()) {
+                                                             extra_args = character(), ...) {
 
   if (!is.null(bbox) && (engine$spatial_test != "none")) {
     # don't pass extra arguments for transformed bbox

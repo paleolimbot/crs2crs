@@ -24,7 +24,8 @@ crs_has_default_proj_cmd()
   crs_to,
   crs_from = wk::wk_crs(handleable),
   bbox = wk::wk_bbox(handleable),
-  extra_args = character()
+  extra_args = character(),
+  ...
 )
 
 crs_cct_proj_cmd(handleable, pipeline, engine = crs_default_engine(), ...)
@@ -61,9 +62,9 @@ Use \code{NULL} to skip bounding box selectio for a single transformation.}
 \item{extra_args}{Extra args to pass to \code{projinfo} (e.g., to use specific
 areas or grid options)}
 
-\item{pipeline}{A PROJ coordinate transformation pipeline definition}
-
 \item{...}{engine-specific transformation options}
+
+\item{pipeline}{A PROJ coordinate transformation pipeline definition}
 }
 \value{
 \itemize{
