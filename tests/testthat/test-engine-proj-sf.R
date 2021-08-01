@@ -47,19 +47,31 @@ test_that("PROJ sf interface works with all authority compliant values", {
 test_that("The spatial_test argument works for the PROJ sf interface", {
   skip_if_not(crs_has_proj_sf())
   skip_if_offline()
+  # don't mess with network settings if they've been set
+  skip_if_not(identical(sf::sf_proj_network(FALSE)))
 
-  # must use network for this (easier than installing files)
-  proj_net_enabled <- sf::sf_proj_network()
-  sf::sf_proj_network(enable = TRUE, url = "https://cdn.proj.org.")
-
-  engine <- crs_engine_proj_sf(spatial_test = "intersects")
-
+  engine <- crs_engine_proj_sf(spatial_test = "none")
   pipe <- crs_engine_proj_pipeline(
     engine,
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83"
   )
-  expect_match(pipe, "hgridshift")
+  expect_equal(pipe[1], "+proj=noop")
+
+
+  sf::sf_proj_network(enable = TRUE, url = "https://cdn.proj.org")
+
+  # basically, the default will use the NRC grid shift if the AOI
+  # isn't considered (at least for PROJ >= 7.1)
+
+  engine <- crs_engine_proj_sf(spatial_test = "intersects")
+  engine$spatial_test <- "intersects"
+  pipe <- crs_engine_proj_pipeline(
+    engine,
+    wk::xy(33.88199, -84.32385, crs = "NAD27"),
+    crs_to = "NAD83"
+  )
+  expect_match(pipe, "conus")
 
   pipe <- crs_engine_proj_pipeline(
     engine,
@@ -67,7 +79,7 @@ test_that("The spatial_test argument works for the PROJ sf interface", {
     crs_to = "NAD83",
     bbox = NULL
   )
-  expect_equal(pipe, "+proj=noop")
+  expect_match(pipe, "nrc")
 
   engine$spatial_test <- "none"
   pipe <- crs_engine_proj_pipeline(
@@ -75,11 +87,9 @@ test_that("The spatial_test argument works for the PROJ sf interface", {
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83"
   )
-  expect_equal(pipe, "+proj=noop")
+  expect_match(pipe, "nrc")
 
-  if (identical(proj_net_enabled, FALSE)) {
-    sf::sf_proj_network(enable = FALSE)
-  }
+  sf::sf_proj_network(enable = FALSE)
 })
 
 test_that("PROJ sf cct interface works", {
