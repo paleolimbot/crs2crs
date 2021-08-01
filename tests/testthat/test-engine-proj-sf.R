@@ -5,10 +5,23 @@ test_that("PROJ sf interface fails appropriately when PROJ <= 7.1", {
   expect_error(crs_engine_proj_sf(), "must be built and run")
 })
 
+test_that("PROJ sf interface works", {
+  skip_if_not(crs_has_proj_sf())
+
+  engine <- crs_engine_proj_sf()
+  expect_true(is_crs_engine(engine))
+  expect_equal(
+    crs_engine_transform(engine, wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857"),
+    wk::xy(-7124447.41076951, 5621521.48619207, crs = "EPSG:3857")
+  )
+  expect_identical(
+    crs_transform(sf::st_sfc(sf::st_point(c(-64, 45)), crs = "OGC:CRS84"), "EPSG:3857", engine = engine),
+    sf::st_sfc(sf::st_point(c(-7124447.41076951, 5621521.48619207)), crs = "EPSG:3857")
+  )
+})
+
 test_that("PROJ sf interface works with all authority compliant values", {
-  skip_if_not_installed("sf")
-  sf_proj_version <- package_version(sf::sf_extSoftVersion()["PROJ"])
-  skip_if_not(sf_proj_version >= "7.1")
+  skip_if_not(crs_has_proj_sf())
 
   engine <- crs_engine_proj_sf(authority_compliant = TRUE)
   expect_equal(
@@ -22,9 +35,7 @@ test_that("PROJ sf interface works with all authority compliant values", {
 })
 
 test_that("The spatial_test argument works for the PROJ sf interface", {
-  skip_if_not_installed("sf")
-  sf_proj_version <- package_version(sf::sf_extSoftVersion()["PROJ"])
-  skip_if_not(sf_proj_version >= "7.1")
+  skip_if_not(crs_has_proj_sf())
 
   engine <- crs_engine_proj_sf()
 
@@ -61,9 +72,7 @@ test_that("The spatial_test argument works for the PROJ sf interface", {
 })
 
 test_that("PROJ sf cct interface works", {
-  skip_if_not_installed("sf")
-  sf_proj_version <- package_version(sf::sf_extSoftVersion()["PROJ"])
-  skip_if_not(sf_proj_version >= "7.1")
+  skip_if_not(crs_has_proj_sf())
 
   engine <- crs_engine_proj_sf()
   expect_equal(
