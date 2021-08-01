@@ -49,7 +49,7 @@ test_that("PROJ command-line cct interface works", {
   skip_if_not(crs_has_default_proj_cmd())
   engine <- crs_engine_proj_cmd(quiet = TRUE)
   expect_equal(
-    crs_cct_proj_cmd(wk::xy(1, 2), "+proj=axisswap +order=2,1", engine = engine),
+    crs_engine_proj_pipeline_apply(engine, wk::xy(1, 2), "+proj=axisswap +order=2,1"),
     wk::xy(2, 1)
   )
 })

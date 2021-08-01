@@ -22,12 +22,8 @@
 #'     PROJ utilities to transform coordinates
 #'   - `crs_has_default_proj_cmd()`: `TRUE` if the default arguments
 #'     for this engine can transform coordinates
-#'   - `crs_engine_proj_pipeline()`: Returns the pipeline definition
-#'     that will be used to apply the transform.
 #'   - `crs_engine_proj_cmd_trans()`: Returns a modified version of `coords`
 #'     after running cct
-#'   - `crs_cct_proj_cmd()`: Just run the `cct` tool (e.g., to execute a
-#'     predefined pipeline).
 #' @export
 #'
 #' @examples
@@ -157,7 +153,7 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_cmd <- function(engine, handleable,
 
 #' @rdname crs_engine_proj_cmd
 #' @export
-crs_cct_proj_cmd <- function(handleable, pipeline, engine = crs_default_engine(), ...) {
+crs_engine_proj_pipeline_apply.crs2crs_engine_proj_cmd <- function(engine, handleable, pipeline, ...) {
   stopifnot(inherits(engine, "crs2crs_engine_proj_cmd"))
   trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
   wk::wk_transform(handleable, trans)
