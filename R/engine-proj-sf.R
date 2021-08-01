@@ -73,12 +73,13 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_sf <- function(engine, handleable, 
     AOI <- numeric(0)
   }
 
-  use_lookup <- c("none" = "NONE", "contains" = "INTERSECTION", "intersets" = "INTERSECTION")
+  use_lookup <- if (engine$spatial_test == "none") "NONE" else "INTERSECTION"
 
   pipelines_df <- sf::sf_proj_pipelines(
     sf::st_crs(crs_from),
     sf::st_crs(crs_to),
-    Use = unname(use_lookup[engine$spatial_test]),
+    Use = if (engine$spatial_test == "none") "NONE" else "INTERSECTION",
+    AOI = AOI,
     strict_containment = identical(engine$spatial_test, "contains"),
     axis_order_authority_compliant = engine$authority_compliant,
   )
