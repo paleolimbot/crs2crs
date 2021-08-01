@@ -2,10 +2,13 @@
 % Please edit documentation in R/engine-sf.R
 \name{crs_engine_sf}
 \alias{crs_engine_sf}
+\alias{crs_has_sf}
 \alias{crs_engine_transform.crs2crs_engine_sf}
 \title{Use sf to transform coordinates}
 \usage{
-crs_engine_sf()
+crs_engine_sf(authority_compliant = NA)
+
+crs_has_sf()
 
 \method{crs_engine_transform}{crs2crs_engine_sf}(
   engine,
@@ -16,6 +19,11 @@ crs_engine_sf()
 )
 }
 \arguments{
+\item{authority_compliant}{Use \code{TRUE} or \code{FALSE} to apply \code{\link[sf:st_transform]{sf::st_transform()}}
+with \code{\link[sf:st_crs]{sf::st_axis_order()}} temporarily set. The default \code{NA} uses whatever
+the current value of \code{\link[sf:st_crs]{sf::st_axis_order()}} happens to be at the time of
+the transform.}
+
 \item{engine}{A transform engine such as \code{\link[=crs_engine_null]{crs_engine_null()}}}
 
 \item{handleable}{A geometry vector (e.g., \code{\link[wk:wkb]{wkb()}}, \code{\link[wk:wkt]{wkt()}}, \code{\link[wk:xy]{xy()}},
@@ -40,7 +48,7 @@ The sf engine is not authority compliant (i.e., geodedic coordinates are
 assumed to have lon,lat axis order).
 }
 \examples{
-if (requireNamespace("sf", quietly = TRUE)) {
+if (crs_has_sf()) {
   engine <- crs_engine_sf()
   crs_transform(
     wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857",

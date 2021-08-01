@@ -2,12 +2,15 @@
 % Please edit documentation in R/engine-proj-sf.R
 \name{crs_engine_proj_sf}
 \alias{crs_engine_proj_sf}
+\alias{crs_has_proj_sf}
 \alias{crs_engine_proj_pipeline.crs2crs_engine_proj_sf}
 \alias{crs_engine_proj_pipeline_apply.crs2crs_engine_proj_sf}
 \alias{crs_engine_transform.crs2crs_engine_proj_sf}
 \title{Use PROJ via sf to transform coordinates}
 \usage{
-crs_engine_proj_sf()
+crs_engine_proj_sf(authority_compliant = TRUE, spatial_test = "intersects")
+
+crs_has_proj_sf()
 
 \method{crs_engine_proj_pipeline}{crs2crs_engine_proj_sf}(
   engine,
@@ -29,6 +32,15 @@ crs_engine_proj_sf()
 )
 }
 \arguments{
+\item{authority_compliant}{Use \code{TRUE} or \code{FALSE} to apply \code{\link[sf:st_transform]{sf::st_transform()}}
+with \code{\link[sf:st_crs]{sf::st_axis_order()}} temporarily set. The default \code{NA} uses whatever
+the current value of \code{\link[sf:st_crs]{sf::st_axis_order()}} happens to be at the time of
+the transform.}
+
+\item{spatial_test}{Use "none" to skip querying coordinate operations based
+on \code{bbox}. Use "contains" to include only operations that completely
+contain \code{handleable}, or "intersects" for.}
+
 \item{engine}{A transform engine such as \code{\link[=crs_engine_null]{crs_engine_null()}}}
 
 \item{handleable}{A geometry vector (e.g., \code{\link[wk:wkb]{wkb()}}, \code{\link[wk:wkt]{wkt()}}, \code{\link[wk:xy]{xy()}},
@@ -42,7 +54,7 @@ crs_engine_proj_sf()
 Defaults to \code{\link[wk:wk_bbox]{wk::wk_bbox()}} of \code{handleable} forced to \code{crs_from}.
 Use \code{NULL} to skip bounding box selectio for a single transformation.}
 
-\item{...}{Arguments passed on to \code{\link[sf:st_transform]{sf::st_transform()}}}
+\item{...}{engine-specific transformation options}
 
 \item{pipeline}{A PROJ coordinate transformation pipeline definition}
 }
@@ -58,7 +70,7 @@ The interface is similar to that of \code{\link[=crs_engine_proj_cmd]{crs_engine
 drop-in replacement for most use-cases.
 }
 \examples{
-if (requireNamespace("sf", quietly = TRUE)) {
+if (crs_has_proj_sf()) {
   engine <- crs_engine_proj_sf()
   crs_transform(
     wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857",

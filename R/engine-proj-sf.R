@@ -7,7 +7,7 @@
 #' drop-in replacement for most use-cases.
 #'
 #' @inheritParams crs_engine_proj_cmd
-#' @param ... Arguments passed on to [sf::st_transform()]
+#' @inheritParams crs_engine_sf
 #'
 #' @return
 #'   - `crs_engine_proj_sf()` returns an engine that can be used to transform coordinates
@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' if (requireNamespace("sf", quietly = TRUE)) {
+#' if (crs_has_proj_sf()) {
 #'   engine <- crs_engine_proj_sf()
 #'   crs_transform(
 #'     wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857",
@@ -23,14 +23,38 @@
 #'   )
 #' }
 #'
-crs_engine_proj_sf <- function() {
+crs_engine_proj_sf <- function(authority_compliant = TRUE,
+                               spatial_test = "intersects") {
+  if (!requireNamespace("sf", quietly = TRUE)) {
+    stop("Package 'sf' required to use crs_engine_proj_sf()")
+  }
+
+  sf_proj_version <- package_version(sf::sf_extSoftVersion()["PROJ"])
+  if (sf_proj_version < "7.1") {
+    stop(
+      "sf must be built and run against PROJ >= 7.1 to use crs_engine_proj_sf()",
+      call. = FALSE
+    )
+  }
+
   structure(
     list(
-      authority_compliant = FALSE,
-      spatial_test = "intersects"
+      authority_compliant = authority_compliant,
+      spatial_test = spatial_test
     ),
     class = "crs2crs_engine_proj_sf"
   )
+}
+
+#' @rdname crs_engine_proj_sf
+#' @export
+crs_has_proj_sf <- function() {
+  if (!requireNamespace("sf", quietly = TRUE)) {
+    return(FALSE)
+  }
+
+  sf_proj_version <- package_version(sf::sf_extSoftVersion()["PROJ"])
+  sf_proj_version >= "7.1"
 }
 
 #' @rdname crs_engine_proj_sf
@@ -51,7 +75,6 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_sf <- function(engine, handleable, 
 
   use_lookup <- c("none" = "NONE", "contains" = "INTERSECTION", "intersets" = "INTERSECTION")
 
-
   pipelines_df <- sf::sf_proj_pipelines(
     sf::st_crs(crs_from),
     sf::st_crs(crs_to),
@@ -60,6 +83,18 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_sf <- function(engine, handleable, 
     axis_order_authority_compliant = engine$authority_compliant,
   )
 
+  if (length(pipelines_df$definition) == 0) {
+    stop(
+      paste0(
+        "crs_engine_proj_sf() can't calculate transformation between\n",
+        format(crs_from),
+        "...and...\n",
+        format(crs_to)
+      ),
+      call. = FALSE
+    )
+  }
+
   pipelines_df$definition[1]
 }
 
@@ -67,6 +102,7 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_sf <- function(engine, handleable, 
 #' @export
 crs_engine_proj_pipeline_apply.crs2crs_engine_proj_sf <- function(engine, handleable, pipeline, ...) {
   if (inherits(handleable, "sf") || inherits(handleable, "sfc")) {
+    sf::st_crs(handleable) <- sf::st_crs("OGC:CRS84")
     result <- suppressWarnings(sf::st_transform(
       handleable,
       sf::st_crs("OGC:CRS84"),
@@ -75,6 +111,7 @@ crs_engine_proj_pipeline_apply.crs2crs_engine_proj_sf <- function(engine, handle
     ))
   } else {
     sf_obj <- wk::wk_handle(handleable, wk::sfc_writer())
+    sf::st_crs(sf_obj) <- sf::st_crs("OGC:CRS84")
     result <- wk::wk_handle(
       suppressWarnings(sf::st_transform(
         sf_obj,
@@ -92,20 +129,7 @@ crs_engine_proj_pipeline_apply.crs2crs_engine_proj_sf <- function(engine, handle
 #' @rdname crs_engine_proj_sf
 #' @export
 crs_engine_transform.crs2crs_engine_proj_sf <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
-  old_value <- sf::st_axis_order(authority_compliant = engine$authority_compliant)
-  on.exit(sf::st_axis_order(old_value))
-
-  if (inherits(handleable, "sf") || inherits(handleable, "sfc")) {
-    sf::st_crs(handleable) <- sf::st_crs(crs_from)
-    result <- sf::st_transform(handleable, sf::st_crs(crs_to), ...)
-  } else {
-    sf_obj <- wk::wk_handle(handleable, wk::sfc_writer())
-    sf::st_crs(sf_obj) <- sf::st_crs(crs_from)
-    result <- wk::wk_handle(
-      sf::st_transform(sf_obj, sf::st_crs(crs_to), ...),
-      wk::wk_writer(handleable)
-    )
-  }
-
+  pipeline <- crs_engine_proj_pipeline(engine, handleable, crs_to, crs_from, ...)
+  result <- crs_engine_proj_pipeline_apply(engine, handleable, pipeline[1])
   wk::wk_set_crs(result, crs_to)
 }

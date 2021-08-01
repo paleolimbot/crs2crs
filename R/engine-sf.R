@@ -8,6 +8,10 @@
 #' assumed to have lon,lat axis order).
 #'
 #' @inheritParams crs_engine_null
+#' @param authority_compliant Use `TRUE` or `FALSE` to apply [sf::st_transform()]
+#'   with [sf::st_axis_order()] temporarily set. The default `NA` uses whatever
+#'   the current value of [sf::st_axis_order()] happens to be at the time of
+#'   the transform.
 #' @param ... Arguments passed on to [sf::st_transform()]
 #'
 #' @return
@@ -16,7 +20,7 @@
 #' @export
 #'
 #' @examples
-#' if (requireNamespace("sf", quietly = TRUE)) {
+#' if (crs_has_sf()) {
 #'   engine <- crs_engine_sf()
 #'   crs_transform(
 #'     wk::xy(-64, 45, crs = "OGC:CRS84"), "EPSG:3857",
@@ -24,15 +28,23 @@
 #'   )
 #' }
 #'
-crs_engine_sf <- function() {
-  structure(list(authority_compliant = FALSE), class = "crs2crs_engine_sf")
+crs_engine_sf <- function(authority_compliant = NA) {
+  structure(list(authority_compliant = authority_compliant), class = "crs2crs_engine_sf")
+}
+
+#' @rdname crs_engine_sf
+#' @export
+crs_has_sf <- function() {
+  requireNamespace("sf", quietly = TRUE)
 }
 
 #' @rdname crs_engine_sf
 #' @export
 crs_engine_transform.crs2crs_engine_sf <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
-  old_value <- sf::st_axis_order(authority_compliant = engine$authority_compliant)
-  on.exit(sf::st_axis_order(old_value))
+  if (!identical(engine$authority_compliant, NA)) {
+    old_value <- sf::st_axis_order(authority_compliant = engine$authority_compliant)
+    on.exit(sf::st_axis_order(old_value))
+  }
 
   if (inherits(handleable, "sf") || inherits(handleable, "sfc")) {
     sf::st_crs(handleable) <- sf::st_crs(crs_from)
