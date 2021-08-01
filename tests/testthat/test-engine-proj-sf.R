@@ -46,9 +46,13 @@ test_that("PROJ sf interface works with all authority compliant values", {
 
 test_that("The spatial_test argument works for the PROJ sf interface", {
   skip_if_not(crs_has_proj_sf())
-  skip("for now")
+  skip_if_offline()
 
-  engine <- crs_engine_proj_sf()
+  # must use network for this (easier than installing files)
+  proj_net_enabled <- sf::sf_proj_network()
+  sf::sf_proj_network(enable = TRUE, url = "https://cdn.proj.org.")
+
+  engine <- crs_engine_proj_sf(spatial_test = "intersects")
 
   pipe <- crs_engine_proj_pipeline(
     engine,
@@ -73,13 +77,9 @@ test_that("The spatial_test argument works for the PROJ sf interface", {
   )
   expect_equal(pipe, "+proj=noop")
 
-  pipe <- crs_engine_proj_pipeline(
-    engine,
-    wk::xy(33.88199, -84.32385, crs = "NAD27"),
-    crs_to = "NAD83",
-    extra_args = c("--area", "USA - North Carolina")
-  )
-  expect_match(pipe, "hgridshift")
+  if (identical(proj_net_enabled, FALSE)) {
+    sf::sf_proj_network(enable = FALSE)
+  }
 })
 
 test_that("PROJ sf cct interface works", {
