@@ -48,7 +48,7 @@ test_that("The spatial_test argument works for the PROJ sf interface", {
   skip_if_not(crs_has_proj_sf())
   skip_if_offline()
   # don't mess with network settings if they've been set
-  skip_if_not(identical(sf::sf_proj_network(FALSE)))
+  skip_if_not(identical(sf::sf_proj_network(), FALSE))
 
   engine <- crs_engine_proj_sf(spatial_test = "none")
   pipe <- crs_engine_proj_pipeline(
