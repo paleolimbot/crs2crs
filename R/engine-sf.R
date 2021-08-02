@@ -47,11 +47,11 @@ crs_engine_transform.crs2crs_engine_sf <- function(engine, handleable, crs_to, c
   }
 
   if (inherits(handleable, "sf") || inherits(handleable, "sfc")) {
-    sf::st_crs(handleable) <- sf::st_crs(crs_from)
+    suppressWarnings(sf::st_crs(handleable) <- sf::st_crs(crs_from))
     result <- sf::st_transform(handleable, sf::st_crs(crs_to), ...)
   } else {
     sf_obj <- wk::wk_handle(handleable, wk::sfc_writer())
-    sf::st_crs(sf_obj) <- sf::st_crs(crs_from)
+    suppressWarnings(sf::st_crs(sf_obj) <- sf::st_crs(crs_from))
     result <- wk::wk_handle(
       sf::st_transform(sf_obj, sf::st_crs(crs_to), ...),
       wk::wk_writer(handleable)

@@ -8,7 +8,7 @@ crs_approx_bbox(
   handleable,
   crs_to,
   crs_from = wk::wk_crs(handleable),
-  engine = crs_default_engine(),
+  engine = crs_engine(),
   n = 20,
   ...
 )

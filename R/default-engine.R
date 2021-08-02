@@ -1,5 +1,5 @@
 
-crs_default_engine_env <- new.env(parent = emptyenv())
+crs_engine_env <- new.env(parent = emptyenv())
 
 
 #' Default coordinate transform engine
@@ -10,59 +10,59 @@ crs_default_engine_env <- new.env(parent = emptyenv())
 #' @param expr The expression to evaluate with the transform engine
 #'
 #' @return
-#'   - `crs_default_engine()` returns the current default transform engine
-#'   - `crs_set_default_engine()` returns the previously set default transform
+#'   - `crs_engine()` returns the current default transform engine
+#'   - `crs_set_engine()` returns the previously set default transform
 #'     engine
-#'   - `with_crs_default_engine()` returns the result of `expr`
+#'   - `with_crs_engine()` returns the result of `expr`
 #' @export
 #'
 #' @examples
-#' crs_default_engine()
-#' prev_engine <- crs_set_default_engine(crs_engine_identity())
+#' crs_engine()
+#' prev_engine <- crs_set_engine(crs_engine_identity())
 #' # ...
-#' crs_set_default_engine(prev_engine)
+#' crs_set_engine(prev_engine)
 #'
-#' with_crs_default_engine(crs_engine_identity(), {
+#' with_crs_engine(crs_engine_identity(), {
 #'   # ...
 #' })
 #'
-crs_default_engine <- function(env = parent.frame()) {
-  if (!("engine" %in% names(crs_default_engine_env))) {
-    engine <- crs_default_engine_if_unset()
-    crs_default_engine_env$engine <- engine
+crs_engine <- function(env = parent.frame()) {
+  if (!("engine" %in% names(crs_engine_env))) {
+    engine <- crs_engine_if_unset()
+    crs_engine_env$engine <- engine
   }
 
-  crs_default_engine_env$engine
+  crs_engine_env$engine
 }
 
-#' @rdname crs_default_engine
+#' @rdname crs_engine
 #' @export
-crs_set_default_engine <- function(engine, env = parent.frame()) {
+crs_set_engine <- function(engine, env = parent.frame()) {
   stopifnot(is_crs_engine(engine, env))
-  current <- crs_default_engine(env = env)
-  crs_default_engine_env$engine <- engine
+  current <- crs_engine(env = env)
+  crs_engine_env$engine <- engine
   invisible(current)
 }
 
-#' @rdname crs_default_engine
+#' @rdname crs_engine
 #' @export
-with_crs_default_engine <- function(engine, expr, env = parent.frame()) {
-  prev <- crs_set_default_engine(engine, env = env)
-  on.exit(crs_set_default_engine(prev))
+with_crs_engine <- function(engine, expr, env = parent.frame()) {
+  prev <- crs_set_engine(engine, env = env)
+  on.exit(crs_set_engine(prev))
   force(expr)
 }
 
-#' @rdname crs_default_engine
+#' @rdname crs_engine
 #' @export
 is_crs_engine <- function(engine, env = parent.frame()) {
   has_s3_method("crs_engine_transform", engine, env) ||
     has_s3_method("crs_engine_get_wk_trans", engine, env)
 }
 
-crs_default_engine_if_unset <- function(env = parent.frame()) {
+crs_engine_if_unset <- function(env = parent.frame()) {
   opt <- getOption(
-    "crs2crs.default_engine",
-    Sys.getenv("R_CRS2CRS_DEFAULT_ENGINE", unset = "")
+    "crs2crs.engine",
+    Sys.getenv("R_CRS2CRS_ENGINE", unset = "")
   )
 
   engine <- if (identical(opt, "")) {
@@ -93,8 +93,8 @@ crs_default_engine_if_unset <- function(env = parent.frame()) {
     warning(
       paste0(
         "is_crs_engine() was FALSE for engine computed from\n",
-        "`getOption('crs2crs.default_engine')` or environment variable\n",
-        "R_CRS2CRS_DEFAULT_ENGINE. Falling back to `crs_engine_null()`"
+        "`getOption('crs2crs.engine')` or environment variable\n",
+        "R_CRS2CRS_ENGINE. Falling back to `crs_engine_null()`"
       ),
       call. = FALSE
     )

@@ -106,7 +106,7 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_sf <- function(engine, handleable, 
 #' @export
 crs_engine_proj_pipeline_apply.crs2crs_engine_proj_sf <- function(engine, handleable, pipeline, ...) {
   if (inherits(handleable, "sf") || inherits(handleable, "sfc")) {
-    sf::st_crs(handleable) <- sf::st_crs("OGC:CRS84")
+    suppressWarnings(sf::st_crs(handleable) <- sf::st_crs("OGC:CRS84"))
     result <- suppressWarnings(sf::st_transform(
       handleable,
       sf::st_crs("OGC:CRS84"),
@@ -115,7 +115,7 @@ crs_engine_proj_pipeline_apply.crs2crs_engine_proj_sf <- function(engine, handle
     ))
   } else {
     sf_obj <- wk::wk_handle(handleable, wk::sfc_writer())
-    sf::st_crs(sf_obj) <- sf::st_crs("OGC:CRS84")
+    suppressWarnings(sf::st_crs(sf_obj) <- sf::st_crs("OGC:CRS84"))
     result <- wk::wk_handle(
       suppressWarnings(sf::st_transform(
         sf_obj,

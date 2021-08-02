@@ -43,7 +43,7 @@ library(crs2crs)
 Use the PROJ command-line engine to transform some coordinates:
 
 ```{r example}
-crs_set_default_engine(crs_engine_proj_cmd())
+crs_set_engine(crs_engine_proj_cmd())
 pos <- wk::xy(-64, 45, crs = "OGC:CRS84")
 crs_transform(pos, "EPSG:3857")
 ```
@@ -58,7 +58,7 @@ engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coord
   coords$y <- log(tan(pi / 4 + coords$y * pi / 180 / 2)) * r
   coords
 })
-crs_set_default_engine(engine)
+crs_set_engine(engine)
 crs_transform(pos, "EPSG:3857")
 ```
 
@@ -66,10 +66,9 @@ The `crs_transform()` function is built on `wk::wk_transform()`, so you can pass
 
 ```{r}
 library(sf)
-nc <- read_sf(system.file("shape/nc.shp", package = "sf")) %>%
-  st_transform("OGC:CRS84")
-
+nc <- read_sf(system.file("shape/nc.shp", package = "sf"))
 nc %>% 
+  st_transform("OGC:CRS84") %>% 
   crs_transform("EPSG:3857")
 ```
 
@@ -83,12 +82,33 @@ engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coord
     "+step +proj=unitconvert +xy_in=deg +xy_out=rad",
     "+step +proj=webmerc +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84"
   )
-  xy_out <- crs_cct_proj_cmd(wk::as_xy(coords), pipe, engine = proj_engine)
+  xy_out <- crs_transform_pipeline(wk::as_xy(coords), pipe, engine = proj_engine)
   coords[c("x", "y")] <- as.data.frame(xy_out)[c("x", "y")]
   coords
 })
 
-crs_set_default_engine(engine)
-nc %>% 
+crs_set_engine(engine)
+nc %>%
+  st_transform("OGC:CRS84") %>% 
   crs_transform("EPSG:3857")
+```
+
+If you're running PROJ >= 7.1 (sorry Ubuntu 20.04 without ubuntugis!) you can also use sf's interface to PROJ which is much faster (especially for sf objects):
+
+```{r}
+# for non-ballpark datum transforms
+sf_proj_network(TRUE, "https://cdn.proj.org/")
+
+crs_set_engine(crs_engine_proj_sf())
+nc %>%
+  crs_transform_pipeline("+proj=axisswap +order=2,1") %>% 
+  crs_set("NAD27") %>% 
+  crs_transform("OGC:CRS84")
+```
+
+You can also use `crs_engine_sf()`, which just wraps `sf::st_transform()`:
+
+```{r}
+crs_set_engine(crs_engine_sf())
+crs_transform(nc, "OGC:CRS84")
 ```

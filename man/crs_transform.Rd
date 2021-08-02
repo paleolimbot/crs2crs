@@ -2,6 +2,7 @@
 % Please edit documentation in R/transform.R
 \name{crs_transform}
 \alias{crs_transform}
+\alias{crs_transform_pipeline}
 \alias{crs_set}
 \alias{crs_get}
 \title{Transform Coordinate Reference Systems}
@@ -10,9 +11,11 @@ crs_transform(
   handleable,
   crs_to,
   crs_from = wk::wk_crs(handleable),
-  engine = crs_default_engine(),
+  engine = crs_engine(),
   ...
 )
+
+crs_transform_pipeline(handleable, pipeline, engine = crs_engine(), ...)
 
 crs_set(handleable, crs_to)
 
@@ -29,6 +32,8 @@ crs_get(handleable)
 \item{engine}{A transform engine such as \code{\link[=crs_engine_null]{crs_engine_null()}}}
 
 \item{...}{engine-specific transformation options}
+
+\item{pipeline}{A character vector representing a PROJ coordinate operation}
 }
 \value{
 A modified \code{handleable} with \code{crs_to}.
@@ -48,7 +53,7 @@ engine <- crs_engine_fun_define(engine, "EPSG:3857", "OGC:CRS84", function(coord
 obj <- wk::xy(-64, 45, crs = "OGC:CRS84")
 crs_transform(obj, "EPSG:3857", engine = engine)
 
-with_crs_default_engine(engine, {
+with_crs_engine(engine, {
   crs_transform(obj, "EPSG:3857")
 })
 

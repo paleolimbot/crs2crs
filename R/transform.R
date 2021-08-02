@@ -18,14 +18,21 @@
 #' obj <- wk::xy(-64, 45, crs = "OGC:CRS84")
 #' crs_transform(obj, "EPSG:3857", engine = engine)
 #'
-#' with_crs_default_engine(engine, {
+#' with_crs_engine(engine, {
 #'   crs_transform(obj, "EPSG:3857")
 #' })
 #'
 crs_transform <- function(handleable, crs_to, crs_from = wk::wk_crs(handleable),
-                          engine = crs_default_engine(), ...) {
+                          engine = crs_engine(), ...) {
   stopifnot(is_crs_engine(engine, env = parent.frame()))
   crs_engine_transform(engine, handleable, crs_to, crs_from, ...)
+}
+
+#' @rdname crs_transform
+#' @export
+crs_transform_pipeline <- function(handleable, pipeline, engine = crs_engine(), ...) {
+  stopifnot(is_crs_engine(engine, env = parent.frame()))
+  crs_engine_proj_pipeline_apply(engine, handleable, pipeline, ...)
 }
 
 #' @rdname crs_transform

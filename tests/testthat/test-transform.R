@@ -6,6 +6,17 @@ test_that("crs_transform() works", {
   )
 })
 
+test_that("crs_transform_pipeline() works", {
+  stopifnot(crs_has_default_proj_cmd())
+  expect_identical(
+    crs_transform_pipeline(
+      wk::xy(1, 2), "+proj=axisswap +order=2,1",
+      engine = crs_engine_proj_cmd(quiet = TRUE)
+    ),
+    wk::xy(2, 1)
+  )
+})
+
 test_that("crs_set() works", {
   expect_identical(
     crs_set(wk::xy(1, 2), 1234),

@@ -14,7 +14,7 @@
 #' )
 #'
 crs_approx_bbox <- function(handleable, crs_to, crs_from = wk::wk_crs(handleable),
-                            engine = crs_default_engine(), n = 20, ...) {
+                            engine = crs_engine(), n = 20, ...) {
   bbox <- unclass(wk::wk_bbox(handleable))
   seq_x <- seq(bbox$xmin, bbox$xmax, length.out = n)
   seq_y <- seq(bbox$ymin, bbox$ymax, length.out = n)
