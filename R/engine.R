@@ -5,6 +5,7 @@
 #' @param engine A transform engine such as [crs_engine_null()]
 #' @param pipeline A character vector representing a PROJ coordinate operation
 #' @param crs_from,crs_to Source and destination coordinate reference systems
+#' @param datum A crs or datum (e.g., WGS84) to use for a long/lat definition
 #' @param quiet Use `TRUE` to silence warnings about the dummy identity transform
 #' @param ... engine-specific transformation options
 #'
@@ -64,6 +65,12 @@ crs_engine_proj_pipeline_apply <- function(engine, handleable, pipeline, ...) {
 
 #' @rdname crs_engine_null
 #' @export
+crs_engine_set_longlat <- function(engine, handleable, datum = NULL) {
+  UseMethod("crs_engine_set_longlat")
+}
+
+#' @rdname crs_engine_null
+#' @export
 crs_engine_transform.default <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
   if (inherits(crs_to, "wk_crs_inherit") || wk::wk_crs_equal(crs_to, crs_from)) {
     return(handleable)
@@ -101,4 +108,32 @@ crs_engine_get_wk_trans.crs2crs_engine_identity <- function(engine, handleable, 
   }
 
   wk::wk_affine_identity()
+}
+
+#' @rdname crs_engine_null
+#' @export
+crs_engine_set_longlat.default <- function(engine, handleable, datum = NULL) {
+  crs <- wk::wk_crs(handleable)
+  if ((is.null(crs) || inherits(crs, "wk_crs_inherit")) && (is.null(datum) || identical(datum, "WGS84"))) {
+    return(wk::wk_set_crs(handleable, "OGC:CRS84"))
+  }
+
+  if (!is.null(datum)) {
+    crs <- datum
+  }
+
+  crs_proj <- crs_proj_definition(crs)
+  switch(
+    crs_proj,
+    "OGC:CRS84" =,
+    "EPSG:4326" =,
+    "WGS84" = wk::wk_set_crs(handleable, "OGC:CRS84"),
+    "OGC:CRS27" =,
+    "EPSG:4267" =,
+    "NAD27" = wk::wk_set_crs(handleable, "OGC:CRS27"),
+    "OGC:CRS83" =,
+    "EPSG:4269" =,
+    "NAD83" = wk::wk_set_crs(handleable, "OGC:CRS83"),
+    stop(sprintf("Can't guess authority-compliant long/lat definition from CRS '%s'", format(crs)))
+  )
 }

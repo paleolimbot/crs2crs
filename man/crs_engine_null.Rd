@@ -7,9 +7,11 @@
 \alias{crs_engine_transform}
 \alias{crs_engine_proj_pipeline}
 \alias{crs_engine_proj_pipeline_apply}
+\alias{crs_engine_set_longlat}
 \alias{crs_engine_transform.default}
 \alias{crs_engine_transform.crs2crs_engine_null}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_identity}
+\alias{crs_engine_set_longlat.default}
 \title{Generic Coordinate Transform Engines}
 \usage{
 crs_engine_null()
@@ -36,6 +38,8 @@ crs_engine_proj_pipeline(
 
 crs_engine_proj_pipeline_apply(engine, handleable, pipeline, ...)
 
+crs_engine_set_longlat(engine, handleable, datum = NULL)
+
 \method{crs_engine_transform}{default}(
   engine,
   handleable,
@@ -59,6 +63,8 @@ crs_engine_proj_pipeline_apply(engine, handleable, pipeline, ...)
   crs_from = wk::wk_crs(handleable),
   ...
 )
+
+\method{crs_engine_set_longlat}{default}(engine, handleable, datum = NULL)
 }
 \arguments{
 \item{quiet}{Use \code{TRUE} to silence warnings about the dummy identity transform}
@@ -73,6 +79,8 @@ crs_engine_proj_pipeline_apply(engine, handleable, pipeline, ...)
 \item{...}{engine-specific transformation options}
 
 \item{pipeline}{A character vector representing a PROJ coordinate operation}
+
+\item{datum}{A crs or datum (e.g., WGS84) to use for a long/lat definition}
 }
 \value{
 \itemize{

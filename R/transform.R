@@ -37,6 +37,13 @@ crs_transform_pipeline <- function(handleable, pipeline, engine = crs_engine(), 
 
 #' @rdname crs_transform
 #' @export
+crs_set_longlat <- function(handleable, datum = NULL, engine = crs_engine()) {
+  stopifnot(is_crs_engine(engine, env = parent.frame()))
+  crs_engine_set_longlat(engine, handleable, datum = datum)
+}
+
+#' @rdname crs_transform
+#' @export
 crs_set <- function(handleable, crs_to) {
   wk::wk_set_crs(handleable, crs_to)
 }

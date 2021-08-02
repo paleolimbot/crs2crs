@@ -3,6 +3,7 @@
 \name{crs_transform}
 \alias{crs_transform}
 \alias{crs_transform_pipeline}
+\alias{crs_set_longlat}
 \alias{crs_set}
 \alias{crs_get}
 \title{Transform Coordinate Reference Systems}
@@ -16,6 +17,8 @@ crs_transform(
 )
 
 crs_transform_pipeline(handleable, pipeline, engine = crs_engine(), ...)
+
+crs_set_longlat(handleable, datum = NULL, engine = crs_engine())
 
 crs_set(handleable, crs_to)
 
@@ -34,6 +37,8 @@ crs_get(handleable)
 \item{...}{engine-specific transformation options}
 
 \item{pipeline}{A character vector representing a PROJ coordinate operation}
+
+\item{datum}{A crs or datum (e.g., WGS84) to use for a long/lat definition}
 }
 \value{
 A modified \code{handleable} with \code{crs_to}.

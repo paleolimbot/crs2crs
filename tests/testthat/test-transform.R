@@ -25,6 +25,10 @@ test_that("crs_set() works", {
   )
 })
 
+test_that("crs_set_longlat() works", {
+  expect_identical(crs_set_longlat(wk::xy(1, 2)), wk::xy(1, 2, crs = "OGC:CRS84"))
+})
+
 test_that("crs_get() works", {
   expect_identical(
     crs_get(wk::xy(1, 2, crs = 1234)),

@@ -38,3 +38,17 @@ test_that("crs_engine_identity() work", {
     )
   )
 })
+
+test_that("default set_longlat works", {
+  obj <- wk::xy(1, 2, crs = NULL)
+  eng <- crs_engine_null()
+  expect_identical(crs_engine_set_longlat(eng, obj), wk::xy(1, 2, crs = "OGC:CRS84"))
+  wk::wk_crs(obj) <- wk::wk_crs_inherit()
+  expect_identical(crs_engine_set_longlat(eng, obj), wk::xy(1, 2, crs = "OGC:CRS84"))
+  wk::wk_crs(obj) <- "NAD27"
+  expect_identical(crs_engine_set_longlat(eng, obj), wk::xy(1, 2, crs = "OGC:CRS27"))
+  wk::wk_crs(obj) <- "NAD83"
+  expect_identical(crs_engine_set_longlat(eng, obj), wk::xy(1, 2, crs = "OGC:CRS83"))
+  wk::wk_crs(obj) <- wk::wk_crs_inherit()
+  expect_identical(crs_engine_set_longlat(eng, obj, datum = "NAD27"), wk::xy(1, 2, crs = "OGC:CRS27"))
+})
