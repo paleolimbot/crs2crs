@@ -7,7 +7,8 @@ test_that("crs_transform() works", {
 })
 
 test_that("crs_transform_pipeline() works", {
-  stopifnot(crs_has_default_proj_cmd())
+  skip_if_not(crs_has_default_proj_cmd())
+
   expect_identical(
     crs_transform_pipeline(
       wk::xy(1, 2), "+proj=axisswap +order=2,1",
