@@ -56,7 +56,7 @@ test_that("The spatial_test argument works for the PROJ sf interface", {
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83"
   )
-  expect_equal(pipe[1], "+proj=noop")
+  expect_match(pipe[1], "\\+proj=noop")
 
 
   sf::sf_proj_network(enable = TRUE, url = "https://cdn.proj.org")

@@ -84,6 +84,9 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_sf <- function(engine, handleable, 
     axis_order_authority_compliant = engine$authority_compliant,
   )
 
+  # only use pipelines that can actually be used!
+  pipelines_df <- pipelines_df[pipelines_df$instantiable, , drop = FALSE]
+
   if (length(pipelines_df$definition) == 0) {
     stop(
       paste0(

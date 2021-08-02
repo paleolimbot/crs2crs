@@ -38,7 +38,7 @@
 crs_engine_proj_cmd <- function(projinfo = getOption("crs2crs.projinfo", "projinfo"),
                                 cct = getOption("crs2crs.cct", "cct"),
                                 spatial_test = "intersects",
-                                env = "current", quiet = FALSE) {
+                                env = NULL, quiet = FALSE) {
   if (!requireNamespace("processx", quietly = TRUE)) {
     stop("crs_engine_proj_cmd() requires package 'processx'", call. = FALSE)
   }

@@ -26,7 +26,7 @@ test_that("The spatial_test argument works for the command-line interface", {
     crs_to = "NAD83",
     bbox = NULL
   )
-  expect_equal(pipe, "+proj=noop")
+  expect_match(pipe, "\\+proj=noop")
 
   engine$spatial_test <- "none"
   pipe <- crs_engine_proj_pipeline(
@@ -34,7 +34,7 @@ test_that("The spatial_test argument works for the command-line interface", {
     wk::xy(33.88199, -84.32385, crs = "NAD27"),
     crs_to = "NAD83"
   )
-  expect_equal(pipe, "+proj=noop")
+  expect_match(pipe, "\\+proj=noop")
 
   pipe <- crs_engine_proj_pipeline(
     engine,
