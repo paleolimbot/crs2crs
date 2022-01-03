@@ -5,7 +5,7 @@
 #' @param prepare A function that converts CRS objects to a canonical string
 #'   definition. This reduces the number of function definitions that might
 #'   otherwise be required to capture the transforms. The default is to
-#'   use [crs_proj_definition()], which returns the shortest possible
+#'   use [wk::wk_crs_proj_definition()], which returns the shortest possible
 #'   definition of a CRS that can be used as a PROJ definition
 #'   (usually something like "EPSG:32620"), falling back to a more verbose
 #'   definition if an authority string is not found.
@@ -45,7 +45,7 @@
 #'   coords
 #' })
 #'
-crs_engine_fun <- function(prepare = crs_proj_definition) {
+crs_engine_fun <- function(prepare = wk::wk_crs_proj_definition) {
   engine <- list(fun = list(), prepare = match.fun(prepare))
   structure(engine, class = "crs2crs_engine_fun")
 }

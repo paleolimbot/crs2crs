@@ -6,8 +6,7 @@
 \alias{crs2crs-package}
 \title{crs2crs: Generic Coordinate System Transforms}
 \description{
-Provides a flexible framework for reproducible
-  coordinate transforms.
+Provides a flexible framework for reproducible coordinate transforms.
 }
 \seealso{
 Useful links:

@@ -122,7 +122,7 @@ crs_engine_set_longlat.default <- function(engine, handleable, datum = NULL) {
     crs <- datum
   }
 
-  crs_proj <- crs_proj_definition(crs)
+  crs_proj <- wk::wk_crs_proj_definition(crs)
   switch(
     crs_proj,
     "OGC:CRS84" =,

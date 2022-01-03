@@ -12,11 +12,12 @@ Description: Provides a flexible framework for reproducible
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 LinkingTo:
     wk
 Imports: 
-    wk
+    wk (>= 0.5.0.9000)
+Remotes: paleolimbot/wk
 URL: https://github.com/paleolimbot/crs2crs
 BugReports: https://github.com/paleolimbot/crs2crs/issues
 Suggests: 

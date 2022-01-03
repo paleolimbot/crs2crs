@@ -8,7 +8,7 @@
 \alias{crs_engine_get_wk_trans.crs2crs_engine_fun}
 \title{Transform coordinates using R functions}
 \usage{
-crs_engine_fun(prepare = crs_proj_definition)
+crs_engine_fun(prepare = wk::wk_crs_proj_definition)
 
 crs_engine_fun_define(engine, crs_to, crs_from, fun)
 
@@ -22,7 +22,7 @@ crs_transform_fun(handleable, fun)
 \item{prepare}{A function that converts CRS objects to a canonical string
 definition. This reduces the number of function definitions that might
 otherwise be required to capture the transforms. The default is to
-use \code{\link[=crs_proj_definition]{crs_proj_definition()}}, which returns the shortest possible
+use \code{\link[wk:wk_crs_proj_definition]{wk::wk_crs_proj_definition()}}, which returns the shortest possible
 definition of a CRS that can be used as a PROJ definition
 (usually something like "EPSG:32620"), falling back to a more verbose
 definition if an authority string is not found.}
