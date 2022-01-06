@@ -13,6 +13,7 @@
 #'   the `x`, `y`, `z`, and/or `m` columns. These columns can also be added
 #'   or removed to set or drop the dimensions of the output.
 #' @inheritParams crs_engine_null
+#' @inheritParams wk::wk_chunk_map_feature
 #'
 #' @return
 #'   - `crs_engine_fun()`: An engine that can be used for transforms

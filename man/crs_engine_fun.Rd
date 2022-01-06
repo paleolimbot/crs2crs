@@ -14,7 +14,11 @@ crs_engine_fun_define(engine, crs_to, crs_from, fun)
 
 crs_engine_fun_get(engine, crs_to, crs_from)
 
-crs_transform_fun(handleable, fun)
+crs_transform_fun(
+  handleable,
+  fun,
+  strategy = wk::wk_chunk_strategy_coordinates(chunk_size = 65536)
+)
 
 \method{crs_engine_get_wk_trans}{crs2crs_engine_fun}(engine, handleable, crs_to, crs_from, ...)
 }
@@ -39,6 +43,9 @@ or removed to set or drop the dimensions of the output.}
 
 \item{handleable}{A geometry vector (e.g., \code{\link[wk:wkb]{wkb()}}, \code{\link[wk:wkt]{wkt()}}, \code{\link[wk:xy]{xy()}},
 \code{\link[wk:rct]{rct()}}, or \code{\link[sf:sfc]{sf::st_sfc()}}) for which \code{\link[wk:wk_handle]{wk_handle()}} is defined.}
+
+\item{strategy}{A function of \code{handleables} and \code{n_features}
+such as that returned by \code{\link[wk:wk_chunk_strategy_single]{wk_chunk_strategy_feature()}}.}
 
 \item{...}{engine-specific transformation options}
 }
