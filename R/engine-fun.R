@@ -100,8 +100,17 @@ crs_engine_fun_get <- function(engine, crs_to, crs_from) {
 #' @rdname crs_engine_fun
 #' @export
 crs_transform_fun <- function(handleable, fun) {
-  trans <- crs_transform_fun_trans(handleable, fun)
-  wk::wk_transform(handleable, trans)
+  result <- wk::wk_chunk_map_feature(
+    handleable,
+    function(chunk) {
+      trans <- crs_transform_fun_trans(chunk, fun)
+      wk::wk_transform(chunk, trans)
+    },
+    output_template = wk::wk_set_crs(handleable, wk::wk_crs_inherit()),
+    strategy = wk::wk_chunk_strategy_coordinates(chunk_size = 65536)
+  )
+
+  wk::wk_set_crs(result, wk::wk_crs(handleable))
 }
 
 #' @rdname crs_engine_fun

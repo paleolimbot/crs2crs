@@ -155,8 +155,33 @@ crs_engine_proj_pipeline.crs2crs_engine_proj_cmd <- function(engine, handleable,
 #' @export
 crs_engine_proj_pipeline_apply.crs2crs_engine_proj_cmd <- function(engine, handleable, pipeline, ...) {
   stopifnot(inherits(engine, "crs2crs_engine_proj_cmd"))
-  trans <- crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
-  wk::wk_transform(handleable, trans)
+  fun <- function(coords) crs_engine_proj_cmd_trans_chunk(engine, pipeline, coords)
+  crs_transform_fun(handleable, fun)
+}
+
+#' @rdname crs_engine_proj_cmd
+#' @export
+crs_engine_transform.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from = wk::wk_crs(handleable), ...) {
+  pipeline <- crs_engine_proj_pipeline(engine, handleable, crs_to, crs_from)
+  result <- crs_engine_proj_pipeline_apply(engine, handleable, pipeline[1])
+  wk::wk_set_crs(result, crs_to)
+}
+
+#' @rdname crs_engine_proj_cmd
+#' @export
+crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from, ...) {
+  pipeline <- crs_engine_proj_pipeline(engine, handleable, crs_to, crs_from)
+  crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
+}
+
+crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline) {
+  coords_original <- wk::wk_coords(handleable)
+  coords <- crs_engine_proj_cmd_trans(engine, pipeline, coords_original)
+  crs_trans_explicit(
+    wk::as_xy(coords),
+    use_z = "z" %in% names(coords),
+    use_m = "m" %in% names(coords)
+  )
 }
 
 crs_engine_proj_cmd_trans <- function(engine, pipeline, coords) {
@@ -230,21 +255,4 @@ crs_engine_proj_cmd_trans_chunk <- function(engine, pipeline, coords) {
   }
   coords[dims] <- coords_out[dims]
   coords
-}
-
-#' @rdname crs_engine_proj_cmd
-#' @export
-crs_engine_get_wk_trans.crs2crs_engine_proj_cmd <- function(engine, handleable, crs_to, crs_from, ...) {
-  pipeline <- crs_engine_proj_pipeline(engine, handleable, crs_to, crs_from)
-  crs_engine_proj_cmd_get_trans(engine, handleable, pipeline[1])
-}
-
-crs_engine_proj_cmd_get_trans <- function(engine, handleable, pipeline) {
-  coords_original <- wk::wk_coords(handleable)
-  coords <- crs_engine_proj_cmd_trans(engine, pipeline, coords_original)
-  crs_trans_explicit(
-    wk::as_xy(coords),
-    use_z = "z" %in% names(coords),
-    use_m = "m" %in% names(coords)
-  )
 }

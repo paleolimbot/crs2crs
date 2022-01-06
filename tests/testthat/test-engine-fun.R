@@ -31,4 +31,17 @@ test_that("crs_transform_fun() works", {
     }),
     wk::xy(6, 12)
   )
+
+  # check that chunking worked
+  chunk_count <- 0L
+  expect_identical(
+    crs_transform_fun(wk::xy(1:65537, 1:65537), function(coords) {
+      chunk_count <<- chunk_count + 1L
+      coords$x <- coords$x * 2
+      coords$y <- coords$y * 3
+      coords
+    }),
+    wk::xy((1:65537) * 2, (1:65537) * 3)
+  )
+  expect_identical(chunk_count, 2L)
 })

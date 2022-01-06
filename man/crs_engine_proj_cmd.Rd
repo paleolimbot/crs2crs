@@ -5,6 +5,7 @@
 \alias{crs_has_default_proj_cmd}
 \alias{crs_engine_proj_pipeline.crs2crs_engine_proj_cmd}
 \alias{crs_engine_proj_pipeline_apply.crs2crs_engine_proj_cmd}
+\alias{crs_engine_transform.crs2crs_engine_proj_cmd}
 \alias{crs_engine_get_wk_trans.crs2crs_engine_proj_cmd}
 \title{PROJ command-line transformation engine}
 \usage{
@@ -29,6 +30,14 @@ crs_has_default_proj_cmd()
 )
 
 \method{crs_engine_proj_pipeline_apply}{crs2crs_engine_proj_cmd}(engine, handleable, pipeline, ...)
+
+\method{crs_engine_transform}{crs2crs_engine_proj_cmd}(
+  engine,
+  handleable,
+  crs_to,
+  crs_from = wk::wk_crs(handleable),
+  ...
+)
 
 \method{crs_engine_get_wk_trans}{crs2crs_engine_proj_cmd}(engine, handleable, crs_to, crs_from, ...)
 }
