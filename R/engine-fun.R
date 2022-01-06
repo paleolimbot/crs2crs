@@ -99,18 +99,38 @@ crs_engine_fun_get <- function(engine, crs_to, crs_from) {
 
 #' @rdname crs_engine_fun
 #' @export
-crs_transform_fun <- function(handleable, fun) {
-  result <- wk::wk_chunk_map_feature(
-    handleable,
-    function(chunk) {
-      trans <- crs_transform_fun_trans(chunk, fun)
-      wk::wk_transform(chunk, trans)
-    },
-    output_template = wk::wk_set_crs(handleable, wk::wk_crs_inherit()),
-    strategy = wk::wk_chunk_strategy_coordinates(chunk_size = 65536)
-  )
+crs_transform_fun <- function(handleable, fun,
+                              strategy = wk::wk_chunk_strategy_coordinates(chunk_size = 65536)) {
+  if (inherits(handleable, "sf")) {
+    proxy <- sf::st_geometry(handleable)
+    n <- nrow(handleable)
+  } else if (is.data.frame(handleable)) {
+    col_is_handleable <- vapply(handleable, wk::is_handleable, logical(1))
+    proxy <- handleable[[which(col_is_handleable)[1]]]
+    n <- nrow(handleable)
+  } else {
+    proxy <- handleable
+    n <- length(handleable)
+  }
 
-  wk::wk_set_crs(result, wk::wk_crs(handleable))
+  if (n == 0) {
+    return(handleable)
+  }
+
+  wk::wk_crs(proxy) <- NULL
+  if (wk::wk_is_geodesic(proxy)) {
+    wk::wk_is_geodesic(proxy) <- FALSE
+  }
+
+  chunks <- strategy(list(proxy), n)
+  for (chunk_i in seq_len(nrow(chunks))) {
+    slice <- (chunks$from[chunk_i]):(chunks$to[chunk_i])
+    chunk <- proxy[slice]
+    trans <- crs_transform_fun_trans(chunk, fun)
+    proxy[slice] <- wk::wk_transform(chunk, trans)
+  }
+
+  wk::wk_restore(handleable, proxy)
 }
 
 #' @rdname crs_engine_fun

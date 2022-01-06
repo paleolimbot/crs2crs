@@ -44,4 +44,40 @@ test_that("crs_transform_fun() works", {
     wk::xy((1:65537) * 2, (1:65537) * 3)
   )
   expect_identical(chunk_count, 2L)
+
+  # check data.frame
+  expect_identical(
+    crs_transform_fun(data.frame(xy = wk::xy(1, 2)), function(coords) {
+      coords$x <- 6
+      coords$y <- 12
+      coords
+    }),
+    data.frame(xy = wk::xy(6, 12))
+  )
+})
+
+test_that("crs_transform_fun() works for sf", {
+  skip_if_not_installed("sf")
+
+  # subset-assign method for sf doesn't update the bounding box,
+  # which is why we need ignore_attr = TRUE
+  expect_equal(
+    crs_transform_fun(sf::st_as_sf(wk::xy(1, 2)), function(coords) {
+      coords$x <- 6
+      coords$y <- 12
+      coords
+    }),
+    sf::st_as_sf(wk::xy(6, 12)),
+    ignore_attr = TRUE
+  )
+
+  expect_equal(
+    crs_transform_fun(sf::st_as_sfc(wk::xy(1, 2)), function(coords) {
+      coords$x <- 6
+      coords$y <- 12
+      coords
+    }),
+    sf::st_as_sfc(wk::xy(6, 12)),
+    ignore_attr = TRUE
+  )
 })
